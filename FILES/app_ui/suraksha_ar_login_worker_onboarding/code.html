@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>SURAKSHA-AR — Worker Login</title>
+<!-- Tailwind CSS v3 with forms and container queries plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              amber: '#F59E0B',
+              'amber-hover': '#D97706',
+              dark: '#0B1326',
+              card: '#162238',
+              border: '#2A3B58',
+              muted: '#8A9BB5'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+<!-- BEGIN: Custom Typography and Layout Styles -->
+<style data-purpose="base-layout">
+    /* Fix mobile viewport height bouncing */
+    html, body {
+      height: 100%;
+      background-color: #040812;
+      touch-action: manipulation;
+    }
+    .custom-glow {
+      box-shadow: 0 0 28px -4px rgba(245, 158, 11, 0.25);
+    }
+  </style>
+<!-- END: Custom Typography and Layout Styles -->
+</head>
+<body class="flex items-center justify-center min-h-screen p-0 sm:p-4 text-slate-100 antialiased selection:bg-brand-amber selection:text-black">
+<!-- BEGIN: Phone Frame Container -->
+<main class="w-full max-w-[400px] h-[852px] max-h-screen bg-[#0B1326] border border-slate-800 sm:rounded-[44px] shadow-2xl overflow-hidden flex flex-col justify-between relative select-none">
+<!-- Decorative Ambient Glow Background -->
+<div aria-hidden="true" class="absolute -top-16 left-1/2 -translate-x-1/2 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+<!-- BEGIN: iOS Status Bar -->
+<header class="w-full pt-3 px-7 flex items-center justify-between z-20 text-xs font-semibold tracking-tight text-slate-200">
+<span class="text-[14px]">9:41</span>
+<!-- Sensor notch indicator -->
+<div class="w-24 h-4 bg-black/40 rounded-full mx-auto -mt-1 hidden sm:block"></div>
+<div class="flex items-center space-x-2">
+<!-- Cellular Signal -->
+<svg class="w-3.5 h-3.5 fill-current" viewbox="0 0 24 24">
+<path d="M2 17h3v4H2v-4zm5-4h3v8H7v-8zm5-4h3v12h-3V9zm5-4h3v16h-3V5z"></path>
+</svg>
+<!-- Wi-Fi -->
+<svg class="w-3.5 h-3.5 fill-current" viewbox="0 0 24 24">
+<path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4zm0 3.5c3.78 0 7.22 1.48 9.77 3.91L12 18.29 2.23 11.41C4.78 8.98 8.22 7.5 12 7.5z"></path>
+</svg>
+<!-- Battery -->
+<div class="w-5 h-2.5 border border-slate-300 rounded-sm p-0.5 flex items-center">
+<div class="w-full h-full bg-slate-200 rounded-[1px]"></div>
+</div>
+</div>
+</header>
+<!-- END: iOS Status Bar -->
+<!-- BEGIN: Main Content Area -->
+<div class="flex-1 flex flex-col justify-between px-6 pt-5 pb-4 z-10 overflow-y-auto">
+<!-- Top Branding Section -->
+<section class="flex flex-col items-center text-center mt-2" data-purpose="brand-header">
+<!-- Hard Hat Emblem Logo -->
+<div class="w-20 h-20 rounded-full bg-gradient-to-b from-[#2A374F] to-[#162238] p-0.5 border border-amber-500/40 custom-glow flex items-center justify-center mb-4 transition-transform active:scale-95">
+<div class="w-full h-full rounded-full bg-[#121B2F] flex items-center justify-center">
+<!-- Safety Helmet Icon SVG -->
+<svg class="w-10 h-10 text-amber-500" fill="currentColor" viewbox="0 0 24 24">
+<path d="M12 3a9 9 0 0 0-9 9c0 1.25.26 2.44.73 3.52C3.26 15.68 3 16.06 3 16.5c0 .83.67 1.5 1.5 1.5H5v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1h.5c.83 0 1.5-.67 1.5-1.5 0-.44-.26-.82-.73-0.98.47-1.08.73-2.27.73-3.52a9 9 0 0 0-9-9zm-1 3.08V11H8.5V6.73C9.28 6.36 10.12 6.14 11 6.08zm2 0c.88.06 1.72.28 2.5.65V11H13V6.08zM6.5 8.16V11H5.08C5.45 9.94 6.04 8.98 6.5 8.16zM17.5 11V8.16c.46.82 1.05 1.78 1.42 2.84H17.5zM6 16v-3h12v3H6z"></path>
+</svg>
+</div>
+</div>
+<h1 class="text-2xl font-bold tracking-tight text-white mb-1">Welcome Back</h1>
+<p class="text-xs text-brand-muted tracking-wide">Login to continue your safety journey</p>
+</section>
+<!-- BEGIN: LoginForm Section -->
+<section class="mt-6 flex flex-col space-y-4" data-purpose="login-form">
+<!-- Worker ID Input -->
+<div class="flex flex-col space-y-1.5">
+<label class="text-xs font-semibold text-slate-300 tracking-wide uppercase" for="workerId">Worker ID</label>
+<div class="relative">
+<input autocomplete="off" class="w-full bg-[#162238]/90 border border-brand-border rounded-xl px-4 py-3.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all font-medium" id="workerId" placeholder="Enter your Worker ID" type="text"/>
+</div>
+</div>
+<!-- Divider -->
+<div class="relative flex items-center justify-center py-1">
+<div class="border-t border-slate-700/60 w-full"></div>
+<span class="bg-[#0B1326] px-3 text-[11px] font-semibold tracking-wider text-slate-400 uppercase relative z-10">or</span>
+</div>
+<!-- Scan QR Code Secondary Button -->
+<button class="w-full bg-[#162238] hover:bg-[#1c2c47] border border-brand-border active:scale-[0.98] transition-all rounded-xl py-3 px-4 flex items-center justify-center space-x-2.5 text-slate-200 group" data-purpose="scan-qr-button" type="button">
+<!-- QR Icon -->
+<svg class="w-5 h-5 text-slate-300 group-hover:text-amber-400 transition-colors" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<rect height="7" width="7" x="3" y="3"></rect>
+<rect height="7" width="7" x="14" y="3"></rect>
+<rect height="7" width="7" x="14" y="14"></rect>
+<rect height="7" width="7" x="3" y="14"></rect>
+<path d="M7 17h.01M17 17h.01M7 7h.01M17 7h.01"></path>
+</svg>
+<span class="text-xs font-semibold tracking-wide">Scan QR Code</span>
+</button>
+<!-- Primary Continue Button -->
+<button class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 active:scale-[0.98] shadow-lg shadow-amber-500/20 text-slate-950 font-bold text-xs tracking-wider uppercase py-3.5 px-4 rounded-xl transition-all duration-150" data-purpose="submit-continue-button" type="submit">
+          Continue
+        </button>
+</section>
+<!-- END: LoginForm Section -->
+<!-- BEGIN: Language and Status Section -->
+<section class="mt-6 flex flex-col items-center space-y-4" data-purpose="localization-and-status">
+<!-- Multilingual Selectors -->
+<div class="w-full flex flex-col items-center space-y-2">
+<p class="text-[11px] font-medium text-slate-400 tracking-wide text-center">
+            Language / भाषा / ᱥᱟᱱᱛᱟᱲᱤ
+          </p>
+<!-- Language Buttons Pill Switcher -->
+<div class="grid grid-cols-3 gap-2 w-full max-w-[320px]">
+<!-- English (Active) -->
+<button class="py-2 px-3 rounded-lg text-xs font-bold bg-amber-500 text-slate-950 shadow-md transition-all text-center tracking-wide" type="button">
+              English
+            </button>
+<!-- Hindi -->
+<button class="py-2 px-3 rounded-lg text-xs font-medium bg-[#162238] hover:bg-[#1e2f4c] text-slate-300 border border-brand-border/60 transition-all text-center tracking-wide" type="button">
+              हिन्दी
+            </button>
+<!-- Santali (Ol Chiki) -->
+<button class="py-2 px-3 rounded-lg text-xs font-medium bg-[#162238] hover:bg-[#1e2f4c] text-slate-300 border border-brand-border/60 transition-all text-center tracking-wide font-sans" type="button">
+              ᱥᱟᱱᱛᱟᱲᱤ
+            </button>
+</div>
+</div>
+<!-- Offline Ready Badge Indicator -->
+<div class="pt-2">
+<div class="inline-flex items-center space-x-1.5 px-3 py-1 bg-[#0d2222] border border-emerald-500/30 rounded-full text-emerald-400 text-[11px] font-medium shadow-sm">
+<svg class="w-3 h-3 text-emerald-400" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24">
+<polyline points="20 6 9 17 4 12"></polyline>
+</svg>
+<span class="tracking-tight">Works offline</span>
+</div>
+</div>
+</section>
+<!-- END: Language and Status Section -->
+</div>
+<!-- END: Main Content Area -->
+<!-- BEGIN: iOS Home Bar Indicator -->
+<footer class="w-full pb-2 pt-1 flex justify-center items-center z-20">
+<div class="w-32 h-1 bg-slate-600/70 rounded-full"></div>
+</footer>
+<!-- END: iOS Home Bar Indicator -->
+</main>
+<!-- END: Phone Frame Container -->
+</body></html>

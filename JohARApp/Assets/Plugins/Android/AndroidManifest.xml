@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.jiwiar.app">
+
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+  <uses-permission android:name="android.permission.CAMERA" />
+  <uses-permission android:name="android.permission.VIBRATE" />
+
+  <uses-feature android:name="android.hardware.camera.ar" android:required="true" />
+  <uses-feature android:glEsVersion="0x00030000" />
+  <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+  <uses-feature android:name="android.hardware.touchscreen.multitouch" android:required="false" />
+  <uses-feature android:name="android.hardware.touchscreen.multitouch.distinct" android:required="false" />
+
+  <application
+      android:icon="@mipmap/app_icon"
+      android:roundIcon="@mipmap/app_icon"
+      android:appCategory="game"
+      android:extractNativeLibs="true"
+      android:hardwareAccelerated="true"
+      android:usesCleartextTraffic="true">
+    
+    <meta-data android:name="unityplayer.UnityActivity" android:value="true" />
+    <meta-data android:name="com.google.ar.core" android:value="required" />
+
+    <!-- Primary Native Launcher Activity (Renders Offline React UI) -->
+    <activity
+        android:name="com.jiwiar.app.MainActivity"
+        android:label="Jiwi-AR"
+        android:icon="@mipmap/app_icon"
+        android:roundIcon="@mipmap/app_icon"
+        android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+        android:screenOrientation="portrait"
+        android:configChanges="orientation|screenSize|keyboardHidden"
+        android:hardwareAccelerated="true"
+        android:windowSoftInputMode="adjustResize"
+        android:exported="true">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+      <!-- Deep link support -->
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="johar" android:host="simulate" />
+      </intent-filter>
+    </activity>
+
+    <!-- Embedded Unity AR Activity (Internal to this exact same APK) -->
+    <activity
+        android:name="com.unity3d.player.UnityPlayerGameActivity"
+        android:theme="@style/BaseUnityGameActivityTheme"
+        android:screenOrientation="portrait"
+        android:launchMode="singleTask"
+        android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize|smallestScreenSize|fontScale|layoutDirection|density"
+        android:hardwareAccelerated="false"
+        android:exported="false">
+    </activity>
+
+  </application>
+</manifest>

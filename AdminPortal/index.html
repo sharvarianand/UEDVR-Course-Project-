@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jiwi-AR • Industrial Mine Safety Operations Center</title>
+    <link rel="icon" type="image/png" href="jiwiAR_logo.png">
+    <meta name="description" content="Centralized Operations Dashboard for Underground Coal Mine Personnel, AR Training Drills, and DGMS Safety Compliance.">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Supabase Realtime Client SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="mainSidebar">
+        <div class="sidebar-brand">
+            <img src="jiwiAR_logo.png" alt="Jiwi-AR Logo" class="brand-logo-img">
+            <div class="brand-info">
+                <h1>Jiwi-AR</h1>
+                <span>Operations Center</span>
+            </div>
+        </div>
+
+        <ul class="nav-menu">
+            <li class="nav-item active" data-tab="overview">
+                <button id="navOverview">
+                    <i data-lucide="layout-dashboard" class="nav-lucide-icon"></i>
+                    <span>Overview</span>
+                </button>
+            </li>
+            <li class="nav-item" data-tab="workers">
+                <button id="navWorkers">
+                    <i data-lucide="users" class="nav-lucide-icon"></i>
+                    <span>Workers</span>
+                    <span class="nav-badge" id="badgeWorkers">0</span>
+                </button>
+            </li>
+            <li class="nav-item" data-tab="trainings">
+                <button id="navTrainings">
+                    <i data-lucide="flame" class="nav-lucide-icon"></i>
+                    <span>AR Drills</span>
+                    <span class="nav-badge" id="badgeTrainings">0</span>
+                </button>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <div class="live-ping-box">
+                <div class="ping-dot" id="pingDot"></div>
+                <span id="pingText">Connecting...</span>
+                <span id="realtimePill" class="realtime-live-badge" title="Live Supabase WebSocket Channel">● LIVE</span>
+            </div>
+            <div style="font-size: 11px; color: var(--text-dim);">JohAR Safety v2.5 • Coal Mine DGMS Compliant</div>
+        </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
+
+        <!-- Top Header -->
+        <header class="top-header">
+            <div class="page-title">
+                <h2 id="pageTitle">Mine Safety Operations Center</h2>
+                <p id="pageDesc">Real-time telemetry, AR training drill completion & personnel safety certifications.</p>
+            </div>
+
+            <div class="header-controls">
+                <button class="btn" id="btnRefresh" title="Force Sync from Supabase">
+                    <i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i>
+                    <span>Sync</span>
+                </button>
+                <button class="btn" id="btnOpenSettings" title="Configure Supabase Database">
+                    <i data-lucide="settings" style="width: 14px; height: 14px;"></i>
+                    <span>Settings</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Dynamic Content Body -->
+        <main class="content-area">
+
+            <!-- KPI Cards Strip (Workers & Drills Telemetry) -->
+            <section class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Active Workers</span>
+                        <div class="kpi-icon-pill">
+                            <i data-lucide="users" class="kpi-icon-svg text-sky-400"></i>
+                        </div>
+                    </div>
+                    <div class="kpi-value" id="kpiWorkersVal">0</div>
+                    <div class="kpi-trend positive">
+                        <span>●</span> Verified underground personnel
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">AR Drills Passed</span>
+                        <div class="kpi-icon-pill">
+                            <i data-lucide="flame" class="kpi-icon-svg text-amber-400"></i>
+                        </div>
+                    </div>
+                    <div class="kpi-value" id="kpiDrillsVal">0</div>
+                    <div class="kpi-trend positive" id="kpiDrillsSub">
+                        <span>●</span> Protocol Execution Logged
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">DGMS Compliance</span>
+                        <div class="kpi-icon-pill">
+                            <i data-lucide="shield-check" class="kpi-icon-svg text-emerald-400"></i>
+                        </div>
+                    </div>
+                    <div class="kpi-value text-emerald-400" id="kpiComplianceVal">0%</div>
+                    <div class="kpi-trend positive" id="kpiComplianceSub">
+                        <span>●</span> Certified worker ratio
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Avg Safety Score</span>
+                        <div class="kpi-icon-pill">
+                            <i data-lucide="award" class="kpi-icon-svg text-amber-400"></i>
+                        </div>
+                    </div>
+                    <div class="kpi-value" id="kpiAvgScoreVal">100%</div>
+                    <div class="kpi-trend positive">
+                        <span>●</span> Mine personnel rating
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 1: Operations Overview -->
+            <div class="tab-view active" id="tab-overview">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 16px;">
+                    <!-- Left: Recent Drills Stream -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title">Realtime AR Safety Drills Stream</h3>
+                            <span style="font-size: 12px; color: var(--text-muted);">Live simulation logs synced with Supabase</span>
+                        </div>
+                        <div id="overviewRecentList">
+                            <!-- Dynamic Event Stream -->
+                        </div>
+                    </div>
+
+                    <!-- Right: Worker Certification Matrix -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title">Worker Readiness &amp; Certification Status</h3>
+                            <span style="font-size: 12px; color: var(--text-muted);">Active underground personnel</span>
+                        </div>
+                        <div id="overviewWorkersList">
+                            <!-- Dynamic Worker Summary List -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: Workers Directory -->
+            <div class="tab-view" id="tab-workers">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title">Enrolled Mine Workers</h3>
+                        <div class="panel-filters">
+                            <input type="text" class="search-input" id="workerSearchInput" placeholder="Search by ID, name or role...">
+                            <select class="filter-select" id="workerSectorFilter">
+                                <option value="ALL">All Sectors</option>
+                                <option value="Sector 1">Sector 1 Processing</option>
+                                <option value="Sector 2">Sector 2 Deep Shaft</option>
+                                <option value="Sector 3">Sector 3 Incline</option>
+                                <option value="Sector 4">Sector 4 Mine</option>
+                            </select>
+                            <button class="btn btn-primary" id="btnRegisterWorker">
+                                + Register Worker
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>Worker ID</th>
+                                    <th>Full Name</th>
+                                    <th>Designation / Role</th>
+                                    <th>Assigned Sector</th>
+                                    <th>Interface Lang</th>
+                                    <th>AR Certification</th>
+                                    <th>Safety Rating</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="workersTableBody">
+                                <!-- Dynamic Workers Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: AR Training Logs -->
+            <div class="tab-view" id="tab-trainings">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title">AR Safety &amp; Protocol Simulation Logs</h3>
+                        <span style="font-size: 12px; color: var(--text-muted);">P.A.S.S., Gas Leak, PPE, LOTO, and Roof Bolting drill logs</span>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>Session ID</th>
+                                    <th>Worker ID</th>
+                                    <th>Module Type</th>
+                                    <th>Protocol Status</th>
+                                    <th>Time Taken</th>
+                                    <th>Safety Score</th>
+                                    <th>Star Rating</th>
+                                    <th>Completed Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody id="trainingsTableBody">
+                                <!-- Dynamic Trainings Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- MODAL: Settings & Connectivity -->
+    <div class="modal-overlay" id="modalSettings">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Supabase Connectivity &amp; Database Config</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="formSettings">
+                <div class="form-group">
+                    <label for="cfgSupabaseUrl">Supabase Project REST URL</label>
+                    <input type="text" class="form-input" id="cfgSupabaseUrl" placeholder="https://your-project.supabase.co" required>
+                    <small style="color: var(--text-dim); font-size: 11px;">Rest API endpoint for the Supabase cloud instance.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="cfgSupabaseKey">Supabase anon Public API Key</label>
+                    <input type="text" class="form-input" id="cfgSupabaseKey" placeholder="eyJhbGciOi..." required>
+                </div>
+
+                <div class="form-group">
+                    <label for="cfgPollInterval">Auto-Polling Interval (Milliseconds)</label>
+                    <input type="number" class="form-input" id="cfgPollInterval" min="2000" step="1000" value="3000">
+                </div>
+
+                <div style="margin-top: 6px;">
+                    <button type="button" class="btn" id="btnTestPing">
+                        Test Connection Latency
+                    </button>
+                    <span id="pingTestResult" style="font-size: 12px; margin-left: 12px;"></span>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-cancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save &amp; Reconnect</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Register New Worker -->
+    <div class="modal-overlay" id="modalRegisterWorker">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Register Underground Worker</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="formAddWorker">
+                <div class="form-group">
+                    <label for="newWorkerId">Worker ID (Unique Badge #)</label>
+                    <input type="text" class="form-input" id="newWorkerId" placeholder="W-9012" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="newWorkerName">Full Name</label>
+                    <input type="text" class="form-input" id="newWorkerName" placeholder="Soren Hansda" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="newWorkerRole">Designation / Role</label>
+                    <select class="filter-select" id="newWorkerRole" style="width: 100%;">
+                        <option value="Level 1 Safety Trainee">Level 1 Safety Trainee</option>
+                        <option value="Blasting Technician">Blasting Technician</option>
+                        <option value="Heavy Machinery Operator">Heavy Machinery Operator</option>
+                        <option value="Environmental Air Monitor">Environmental Air Monitor</option>
+                        <option value="Underground Safety Officer">Underground Safety Officer</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="newWorkerSector">Assigned Sector</label>
+                    <select class="filter-select" id="newWorkerSector" style="width: 100%;">
+                        <option value="Sector 4 Mine">Sector 4 Mine</option>
+                        <option value="Sector 2 Deep Shaft">Sector 2 Deep Shaft</option>
+                        <option value="Sector 1 Processing">Sector 1 Processing</option>
+                        <option value="Sector 3 Incline">Sector 3 Incline</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="newWorkerLang">Preferred Language</label>
+                    <select class="filter-select" id="newWorkerLang" style="width: 100%;">
+                        <option value="Hindi">Hindi (हिन्दी)</option>
+                        <option value="Santali">Santali (ᱥᱟᱱᱛᱟᱲᱤ)</option>
+                        <option value="English">English</option>
+                    </select>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-cancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save to Database</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Worker Profile Inspection -->
+    <div class="modal-overlay" id="modalWorkerDetails">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Worker Credentials &amp; Dossier</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 14px; font-size: 13px;">
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-subtle); padding-bottom: 10px;">
+                    <span style="color: var(--text-muted);">Worker ID:</span>
+                    <strong id="detWorkerId" style="font-family: 'JetBrains Mono', monospace; color: var(--primary-amber);"></strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-subtle); padding-bottom: 10px;">
+                    <span style="color: var(--text-muted);">Full Name:</span>
+                    <strong id="detWorkerName"></strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-subtle); padding-bottom: 10px;">
+                    <span style="color: var(--text-muted);">Designation:</span>
+                    <strong id="detWorkerRole"></strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-subtle); padding-bottom: 10px;">
+                    <span style="color: var(--text-muted);">Sector:</span>
+                    <strong id="detWorkerSector"></strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-subtle); padding-bottom: 10px;">
+                    <span style="color: var(--text-muted);">Language:</span>
+                    <strong id="detWorkerLang"></strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-subtle); padding-bottom: 10px;">
+                    <span style="color: var(--text-muted);">Safety Compliance Score:</span>
+                    <strong id="detWorkerScore" style="color: var(--safety-green);"></strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: var(--text-muted);">AR Drills Completed:</span>
+                    <strong id="detDrillCount"></strong>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-cancel">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Worker QR Login Badge -->
+    <div class="modal-overlay" id="modalWorkerQR">
+        <div class="modal-box" style="max-width: 400px; text-align: center;">
+            <div class="modal-header">
+                <h3>Worker QR Login Badge</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            
+            <div style="padding: 12px 0; display: flex; flex-direction: column; align-items: center; gap: 14px;">
+                <!-- Digital Badge Card -->
+                <div class="qr-badge-card" style="width: 100%; background: #0E1017; border: 1px solid rgba(255,255,255,0.09); border-radius: 14px; padding: 22px; display: flex; flex-direction: column; align-items: center; gap: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.6);">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <img src="jiwiAR_logo.png" alt="Jiwi-AR" style="width: 26px; height: 26px; object-fit: contain;">
+                        <span style="font-weight: 700; font-size: 13px; letter-spacing: 0.05em; color: #fff;">JIWI-AR • SURAKSHA</span>
+                    </div>
+
+                    <!-- The QR Canvas/SVG Container -->
+                    <div id="workerQRCodeContainer" style="background: #ffffff; padding: 14px; border-radius: 12px; display: flex; align-items: center; justify-content: center; width: 220px; height: 220px; margin: 4px 0;">
+                        <!-- Rendered by QRCode.js -->
+                    </div>
+
+                    <!-- Worker Credentials Details -->
+                    <div style="width: 100%; text-align: center; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px;">
+                        <h4 id="qrWorkerName" style="color: #fff; font-size: 16px; font-weight: 600; margin-bottom: 2px;"></h4>
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 6px;">
+                            <span id="qrWorkerId" style="font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--primary-amber); font-weight: 700;"></span>
+                            <span style="color: var(--text-dim); font-size: 11px;">•</span>
+                            <span id="qrWorkerRole" style="color: var(--text-muted); font-size: 12px;"></span>
+                        </div>
+                        <div id="qrWorkerSector" style="color: var(--text-dim); font-size: 11px; margin-top: 3px;"></div>
+                    </div>
+                </div>
+
+                <p style="font-size: 11px; color: var(--text-muted); margin: 0; line-height: 1.4;">
+                    Point the Jiwi-AR mobile app scanner at this code to automatically sign in as this worker.
+                </p>
+            </div>
+
+            <div class="form-actions" style="margin-top: 10px;">
+                <button type="button" class="btn btn-cancel">Close</button>
+                <button type="button" class="btn btn-primary" id="btnPrintQRBadge">
+                    Print / Save Badge
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Real-time Alert Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="qrcode.min.js"></script>
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

@@ -23,7 +23,11 @@ public class ExtinguisherController : MonoBehaviour
     [HideInInspector]
     public bool isSpraying = false;
 
+    [Header("Behavior")]
+    public bool followCamera = true;
+
     private ParticleSystem smokeSpray;
+    private ParticleSystem[] allSmokeSystems;
     private Camera arCamera;
     private bool isInitialized = false;
 
@@ -73,73 +77,129 @@ public class ExtinguisherController : MonoBehaviour
             pinObject = foundPin;
         }
 
-        Debug.Log($"[ExtinguisherController] Parts Found -> Seals: {seals.Count}, Pin: {(pinObject != null ? pinObject.name : "null")}");
+        string pinName = pinObject != null ? pinObject.name : "null";
+        Debug.Log($"[ExtinguisherController] Parts Found -> Seals: {seals.Count}, Pin: {pinName}");
+    }
+
+    private Camera GetCamera()
+    {
+        if (arCamera != null) return arCamera;
+        arCamera = Camera.main;
+        if (arCamera == null)
+        {
+            var allCams = Camera.allCameras;
+            if (allCams.Length > 0) arCamera = allCams[0];
+            else arCamera = FindAnyObjectByType<Camera>();
+        }
+        return arCamera;
     }
 
     void Start()
     {
         FindParts();
 
-        // Find smoke spray - look for the nested one under SprayPoint
-        var allPS = GetComponentsInChildren<ParticleSystem>(true);
-        if (allPS.Length > 0)
+        // Find all smoke spray particle systems (e.g. main billowing cloud + core jet)
+        allSmokeSystems = GetComponentsInChildren<ParticleSystem>(true);
+        if (allSmokeSystems.Length > 0)
         {
-            smokeSpray = allPS[0];
-            smokeSpray.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-            Debug.Log("[ExtinguisherController] Found smoke particle system: " + smokeSpray.gameObject.name);
+            smokeSpray = allSmokeSystems[0];
+            foreach (var ps in allSmokeSystems)
+            {
+                if (ps != null) ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            }
+            Debug.Log($"[ExtinguisherController] Found {allSmokeSystems.Length} smoke particle systems.");
         }
         else
         {
             Debug.LogError("[ExtinguisherController] No particle system found on extinguisher!");
         }
 
-        arCamera = Camera.main;
-        if (arCamera == null)
-            arCamera = FindAnyObjectByType<Camera>();
+        Camera cam = GetCamera();
+        if (cam != null && followCamera)
+        {
+            transform.position = GetDesiredPosition(cam);
+            bool isLandscape = Screen.width >= Screen.height;
+            float aimYaw = isLandscape ? -7.5f : -5.5f;
+            transform.rotation = cam.transform.rotation * Quaternion.Euler(4.5f, aimYaw, 0f);
+        }
+        Debug.Log("[ExtinguisherController] Init. Camera=" + (cam != null) + " Smoke=" + (smokeSpray != null) + " Follow=" + followCamera);
+    }
 
-        isInitialized = (arCamera != null);
-        Debug.Log("[ExtinguisherController] Init. Camera=" + (arCamera != null) + " Smoke=" + (smokeSpray != null));
+    private Vector3 GetDesiredPosition(Camera cam)
+    {
+        bool isLandscape = Screen.width >= Screen.height;
+        float forwardOffset = isLandscape ? 0.48f : 0.52f;
+        float upOffset = isLandscape ? -0.22f : -0.26f;
+        float rightOffset = isLandscape ? 0.20f : 0.14f;
+
+        return cam.transform.position
+            + cam.transform.forward * forwardOffset
+            + cam.transform.up * upOffset
+            + cam.transform.right * rightOffset;
     }
 
     void LateUpdate()
     {
-        if (!isInitialized || arCamera == null) return;
+        if (!followCamera) return;
+        Camera cam = GetCamera();
+        if (cam == null) return;
 
-        // Position extinguisher lower and further right so it doesn't block the view
-        Vector3 targetPos = arCamera.transform.position
-            + arCamera.transform.forward * 0.6f
-            + arCamera.transform.up * -0.35f
-            + arCamera.transform.right * 0.15f;
+        // Position extinguisher firmly in the bottom-right foreground of the user's camera view
+        Vector3 targetPos = GetDesiredPosition(cam);
 
-        transform.position = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * 10f);
-        transform.rotation = Quaternion.Slerp(transform.rotation, arCamera.transform.rotation, Time.deltaTime * 10f);
+        // Aim the nozzle smoothly towards the center crosshair/fire
+        bool isLandscape = Screen.width >= Screen.height;
+        float aimYaw = isLandscape ? -7.5f : -5.5f;
+        float aimPitch = 4.5f;
+        Quaternion targetRot = cam.transform.rotation * Quaternion.Euler(aimPitch, aimYaw, 0f);
+
+        transform.position = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * 35f);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * 35f);
     }
 
     void Update()
     {
-        if (smokeSpray == null) return;
+        if (allSmokeSystems == null || allSmokeSystems.Length == 0) return;
 
-        if (isSpraying && !smokeSpray.isPlaying)
+        if (isSpraying)
         {
-            smokeSpray.Play();
-            Debug.Log("[ExtinguisherController] SMOKE ON");
+            foreach (var ps in allSmokeSystems)
+            {
+                if (ps != null && !ps.isPlaying) ps.Play();
+            }
         }
-        else if (!isSpraying && smokeSpray.isPlaying)
+        else
         {
-            smokeSpray.Stop();
-            Debug.Log("[ExtinguisherController] SMOKE OFF");
+            foreach (var ps in allSmokeSystems)
+            {
+                if (ps != null && ps.isPlaying) ps.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+            }
         }
     }
 
     public void StartSpray()
     {
         isSpraying = true;
+        if (allSmokeSystems != null)
+        {
+            foreach (var ps in allSmokeSystems)
+            {
+                if (ps != null && !ps.isPlaying) ps.Play();
+            }
+        }
         Debug.Log("[ExtinguisherController] StartSpray called");
     }
 
     public void StopSpray()
     {
         isSpraying = false;
+        if (allSmokeSystems != null)
+        {
+            foreach (var ps in allSmokeSystems)
+            {
+                if (ps != null && ps.isPlaying) ps.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+            }
+        }
         Debug.Log("[ExtinguisherController] StopSpray called");
     }
 

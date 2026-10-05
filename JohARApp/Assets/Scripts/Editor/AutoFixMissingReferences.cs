@@ -42,11 +42,14 @@ public class AutoFixMissingReferences
         }
 
         // 2. Fix Fire Material (Pink Cubes)
-        Texture2D defaultPart = Resources.GetBuiltinResource<Texture2D>("Default-ParticleSystem.psd");
+        Texture2D defaultPart = AssetDatabase.GetBuiltinExtraResource<Texture2D>("Default-Particle.psd");
+        if (defaultPart == null)
+        {
+            defaultPart = Resources.GetBuiltinResource<Texture2D>("Default-Particle.psd");
+        }
         string[] matPaths = new string[] {
             "Assets/Materials/FireParticleMat.mat",
-            "Assets/Materials/EmberParticleMat.mat",
-            "Assets/Models/Extinguisher/SmokeParticleMat.mat"
+            "Assets/Materials/EmberParticleMat.mat"
         };
 
         foreach (string p in matPaths)
@@ -62,47 +65,45 @@ public class AutoFixMissingReferences
             }
         }
 
-        // 3. Force Scale of Extinguisher (In case it's huge or tiny)
-        GameObject extAsset = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/AR/ExtinguisherPrefab.prefab");
-        if (extAsset != null)
-        {
-            GameObject inst = (GameObject)PrefabUtility.InstantiatePrefab(extAsset);
-            Transform fbxTransform = null;
-            
-            // Look for the FBX mesh child
-            foreach (Transform child in inst.transform)
-            {
-                if (child.GetComponentInChildren<MeshRenderer>() != null && 
-                    child.name != "SmokeSpray" && child.name != "Seal" && child.name != "Pin")
-                {
-                    fbxTransform = child;
-                    break;
-                }
-            }
+        Texture2D autoSmokeTex = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/TrueClouds/Textures/TrueCloudSmoke.png");
+        if (autoSmokeTex == null)
+            autoSmokeTex = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/TrueClouds/Textures/defaultNoise.png");
 
-            if (fbxTransform != null)
+        if (autoSmokeTex != null)
+        {
+            string[] autoSmokeMatPaths = new string[] {
+                "Assets/Models/Extinguisher/SmokeParticleMat.mat",
+                "Assets/Materials/SmokeParticleMat.mat"
+            };
+
+            foreach (string p in autoSmokeMatPaths)
             {
-                Renderer[] renderers = fbxTransform.GetComponentsInChildren<Renderer>();
-                if (renderers.Length > 0)
+                Material sm = AssetDatabase.LoadAssetAtPath<Material>(p);
+                if (sm != null && sm.GetTexture("_BaseMap") != autoSmokeTex)
                 {
-                    Bounds b = renderers[0].bounds;
-                    for (int i = 1; i < renderers.Length; i++) b.Encapsulate(renderers[i].bounds);
-                    
-                    float maxDim = Mathf.Max(b.size.x, Mathf.Max(b.size.y, b.size.z));
-                    if (maxDim > 0 && maxDim > 1.0f || maxDim < 0.1f) // Only fix if it's way out of bounds
-                    {
-                        float targetScale = 0.35f / maxDim; // Make it exactly 35cm
-                        fbxTransform.localScale = Vector3.one * targetScale;
-                        Vector3 offset = fbxTransform.position - b.center;
-                        fbxTransform.localPosition = new Vector3(0, -b.extents.y * targetScale, 0); 
-                        
-                        PrefabUtility.SaveAsPrefabAsset(inst, "Assets/Prefabs/AR/ExtinguisherPrefab.prefab");
-                        changed = true;
-                        Debug.Log("[AutoFix] Rescaled FBX Extinguisher model to 35cm!");
-                    }
+                    sm.SetTexture("_BaseMap", autoSmokeTex);
+                    sm.SetTexture("_MainTex", autoSmokeTex);
+                    EditorUtility.SetDirty(sm);
+                    changed = true;
+                    Debug.Log("[AutoFix] Linked TrueClouds smoke texture for material: " + p);
                 }
             }
-            Object.DestroyImmediate(inst);
+        }
+
+        // 3. Ensure ExtinguisherPrefab has TrueClouds Realistic Smoke & Aligned Forward Nozzle
+        GameObject curExt = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/AR/ExtinguisherPrefab.prefab");
+        if (curExt != null)
+        {
+            var ps = curExt.GetComponentInChildren<ParticleSystem>(true);
+            Transform spray = curExt.transform.Find("SprayPoint");
+            bool needsRebuild = ps == null || !ps.noise.enabled || ps.main.maxParticles > 30 ||
+                                spray == null || Mathf.Abs(spray.localPosition.y - 0.2728f) > 0.01f;
+            if (needsRebuild)
+            {
+                CreateExtinguisherPrefab.CreatePrefab();
+                changed = true;
+                Debug.Log("[AutoFix] Upgraded ExtinguisherPrefab with TrueClouds Realistic Smoke VFX & Forward Nozzle!");
+            }
         }
 
         if (changed)

@@ -36,9 +36,9 @@ public class CreateFirePrefab
         fireMat.SetColor("_TintColor", new Color(1f, 0.6f, 0.1f, 0.8f)); // Fallback for standard particles
         
         // Find default particle texture
-        Texture2D defaultParticleTex = AssetDatabase.GetBuiltinExtraResource<Texture2D>("Default-ParticleSystem.psd");
+        Texture2D defaultParticleTex = AssetDatabase.GetBuiltinExtraResource<Texture2D>("Default-Particle.psd");
         if (defaultParticleTex == null)
-            defaultParticleTex = AssetDatabase.GetBuiltinExtraResource<Texture2D>("Default-ParticleSystem.psd");
+            defaultParticleTex = Resources.GetBuiltinResource<Texture2D>("Default-Particle.psd");
             
         if (defaultParticleTex != null)
         {

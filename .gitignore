@@ -91,3 +91,18 @@ Unity.VisualScripting.Generated/VisualScripting.Core/Property Providers.meta
 # Scene Dependency Cache
 SceneDependencyCache*
 
+# Web & Node ignores
+node_modules/
+dist/
+dist-ssr/
+.vercel/
+*.local
+
+# Build & signing artifacts
+*.idsig
+*.apk.idsig
+
+# UI Toolkit auto-generated schema
+UIElementsSchema/
+
+

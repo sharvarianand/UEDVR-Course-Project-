@@ -63,16 +63,16 @@ public class FixFireAndExtinguisher : MonoBehaviour
         }
 
         // 2. FIX FIRE PARTICLES TEXTURE
-        Texture2D defaultPart = Resources.GetBuiltinResource<Texture2D>("Default-ParticleSystem.psd");
+        Texture2D defaultPart = AssetDatabase.GetBuiltinExtraResource<Texture2D>("Default-Particle.psd");
+        if (defaultPart == null)
+            defaultPart = Resources.GetBuiltinResource<Texture2D>("Default-Particle.psd");
 
-        string[] matPaths = new string[] {
+        string[] fireMatPaths = new string[] {
             "Assets/Materials/FireMat.mat",
-            "Assets/Materials/EmberMat.mat",
-            "Assets/Models/Extinguisher/SmokeParticleMat.mat",
-            "Assets/Materials/SmokeParticleMat.mat"
+            "Assets/Materials/EmberMat.mat"
         };
 
-        foreach (string p in matPaths)
+        foreach (string p in fireMatPaths)
         {
             Material mat = AssetDatabase.LoadAssetAtPath<Material>(p);
             if (mat != null && defaultPart != null)
@@ -80,7 +80,29 @@ public class FixFireAndExtinguisher : MonoBehaviour
                 mat.SetTexture("_BaseMap", defaultPart);
                 mat.SetTexture("_MainTex", defaultPart);
                 EditorUtility.SetDirty(mat);
-                Debug.Log("Fixed texture for material: " + p);
+                Debug.Log("Fixed texture for fire material: " + p);
+            }
+        }
+
+        Texture2D smokeTex = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/msVFX_Free Smoke Effects Pack/Textures/msVFX_Stylized Smoke 1_Texture.png");
+        string[] smokeMatPaths = new string[] {
+            "Assets/Models/Extinguisher/SmokeParticleMat.mat",
+            "Assets/Materials/SmokeParticleMat.mat",
+            "Assets/msVFX_Free Smoke Effects Pack/Materials/msVFX_Stylized Smoke 1_Material.mat"
+        };
+
+        if (smokeTex != null)
+        {
+            foreach (string p in smokeMatPaths)
+            {
+                Material mat = AssetDatabase.LoadAssetAtPath<Material>(p);
+                if (mat != null)
+                {
+                    mat.SetTexture("_BaseMap", smokeTex);
+                    mat.SetTexture("_MainTex", smokeTex);
+                    EditorUtility.SetDirty(mat);
+                    Debug.Log("Fixed stylized smoke texture for material: " + p);
+                }
             }
         }
 
