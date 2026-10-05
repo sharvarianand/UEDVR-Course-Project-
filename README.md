@@ -1,5 +1,5 @@
 # 🏆 UEDVR Course Project — Project JohAR
-> **AR-Based Industrial Safety & Vocational Training Simulator** | **Smart India Hackathon (SIH) 2026** | **Problem Statement ID:** 26041
+> **AR-Based Industrial Safety & Vocational Training Simulator**
 
 This repository contains the **UEDVR Course Project** developed by `sharvarianand`.
 
