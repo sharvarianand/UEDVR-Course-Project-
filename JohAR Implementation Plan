@@ -1,0 +1,573 @@
+# 🏆 Project JohAR — AR-Based Vocational Training Simulator for Industrial Safety
+## SIH 2026 | PS ID: 26041 | Government of Jharkhand
+
+> **Product Name: Project JohAR** ("Johar" = Jharkhand Greeting + "AR" = Augmented Reality)
+> A complete end-to-end industrial safety training, certification, and compliance ecosystem for Jharkhand's mining & manufacturing workforce.
+
+---
+
+## 1. The Big Picture — Why We Win
+
+> [!IMPORTANT]
+> **We are NOT building "just an AR app."** We are building a **complete safety ecosystem** — from a worker's first day of orientation to their ongoing compliance, from a mine supervisor's real-time dashboard to a DGMS auditor's verification portal. Every other team will submit an AR demo. We submit a **production-grade platform**.
+
+### Our Winning Formula
+
+| Dimension | What Others Will Do | What We Do |
+|:---|:---|:---|
+| **Training** | AR-only modules | **Blended Learning**: Video → Quiz → AR Simulation → Assessment (4-stage pedagogy) |
+| **Language** | Hindi + English text | **Voice-First in Santali + Hindi + English** with Ol Chiki script support |
+| **Certification** | Basic PDF certificate | **QR-verified, blockchain-anchored, DGMS-format certificates** |
+| **Offline** | Partial/broken | **Offline-first architecture** — works in zero-connectivity mine zones |
+| **Engagement** | One-time training | **Gamified spaced repetition** — daily 5-min drills with XP, badges, leaderboards |
+| **Admin** | Basic dashboard | **Real-time compliance dashboard** with heatmaps, risk analytics, audit trails |
+| **Extras** | None | **AI-powered incident prediction**, **family safety SMS**, **Admin broadcast alerts** |
+
+---
+
+## 2. Complete Use Cases
+
+### 2.1 Core Use Cases (From Problem Statement)
+
+| # | Use Case | Description |
+|:--|:---------|:------------|
+| UC-1 | **Fire & Explosion Response** | AR overlay on real surroundings: exit identification markers, virtual extinguisher use (shake phone to simulate spray), evacuation route arrows on floor, sequential step validation |
+| UC-2 | **Gas Leak & Confined Space Protocol** | AR hazard zone visualization (red zones shimmer on camera feed), PPE selection drag-and-drop, buddy-system simulation where phone vibrates for "partner alerts" |
+| UC-3 | **Machinery Lockout/Tagout (LOTO)** | AR overlay on machinery (via marker/image target): step-by-step lockout procedure, visual lock placement, tag verification |
+| UC-4 | **Electrical Safety & Arc Flash** | AR danger zones around electrical panels, safe approach distance visualization, PPE requirement overlay |
+| UC-5 | **Roof/Ground Support in Underground Mines** | AR visualization of roof bolting patterns, danger zone identification, support structure placement |
+| UC-6 | **AR-Based Practical Assessment & Certification** | Timed, scored AR scenarios (no boring MCQs). Users must physically perform the correct actions in AR. Generates QR-based certificates. |
+| UC-7 | **Admin Compliance Dashboard** | Web dashboard for mine managers/DGMS officials: training completion, certification status, compliance reports |
+
+### 2.2 Extended Use Cases (Our Differentiators) 🚀
+
+| # | Use Case | Why It Matters |
+|:--|:---------|:---------------|
+| UC-8 | **Onboarding Journey** | New tribal recruit's first-day guided walkthrough: what is a mine, what are the dangers, who to call — all in Santali voice with animations. **No other team will think of this.** |
+| UC-9 | **Daily Safety Drill (5-min Micro-Learning)** | Push notification → 3-question quiz + 1 AR scenario → XP earned. Spaced repetition algorithm ensures forgetting curve is defeated. **Research shows 300% better retention.** |
+| UC-10 | **Peer Learning & Buddy System** | Workers can pair up (NFC/Bluetooth), complete training together, earn bonus XP. Mirrors the real buddy-system in mines. |
+| UC-11 | **Emergency SOS + Family Alert** | One-tap SOS button → sends GPS location + alert to control room + SMS to registered family member in local language |
+| UC-12 | **Incident Reporting (Crowdsourced Safety)** | Workers can photo-report hazards (loose wiring, missing signage) → admin reviews → gamified reward for reporting |
+| UC-13 | **Supervisor Training Module** | Separate track for supervisors: how to conduct toolbox talks, incident investigation, first-responder training |
+| UC-14 | **DGMS Audit Portal** | External verification portal where DGMS inspectors scan QR codes to verify worker certifications, view training history, check compliance |
+| UC-15 | **Seasonal/Contextual Training** | Monsoon-specific (flooding, electrical shorts), summer-specific (heat stroke, dehydration) modules auto-activated based on date/weather API |
+| UC-16 | **Voice-Guided AR Mode** | For workers who cannot read — entire AR simulation is narrated in Santali/Hindi. Voice commands to interact ("हां", "आगे बढ़ो") |
+| UC-17 | **Offline Sync & Data Compression** | Training data, certificates, and progress sync when connectivity is available. Optimized for 2G/3G networks. |
+| UC-18 | **Admin Push Alerts (Real-Time)** | Supervisors can push emergency alerts, weather warnings, or mandatory new training notices directly to workers' phones. |
+| UC-19 | **AI Assistant & Offline Knowledge Base** | A localized AI chatbot for safety questions. When offline, it falls back to an embedded, searchable safety rulebook (knowledge base). |
+
+---
+
+## 3. Unique & Innovative Features
+
+### 🔥 Feature 1: "Jharkhand-First" Design Philosophy
+- **UI themed with Jharkhand's cultural motifs**: Warli-inspired illustrations for safety concepts, Sohrai art patterns in backgrounds, familiar village/mine imagery
+- **Character avatars** that look like local tribal workers (not generic corporate humans)
+- **Audio greetings** in Mundari, Ho, Santali, Hindi — worker selects their language on first launch
+- **Color palette** inspired by Jharkhand's earth tones (laterite red, sal green, coal grey) — not generic blue/white corporate
+
+### 🔥 Feature 2: 4-Stage Blended Learning Pipeline
+
+```
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│  📹 WATCH   │───▶│  📝 LEARN   │───▶│  🎮 PLAY    │───▶│  ✅ PROVE   │
+│  Video +    │    │  Interactive │    │  Guided AR  │    │  Live AR    │
+│  Voice Over │    │  Flashcards  │    │  Practice   │    │  Assessment │
+│  (2-3 min)  │    │  + Quiz      │    │  Scenarios  │    │  (Scored)   │
+└─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘
+```
+
+> Each stage must be completed before unlocking the next. This mirrors proven instructional design (Bloom's Taxonomy: Remember → Understand → Apply → Evaluate).
+
+### 🔥 Feature 3: Gamification Engine — "Safety Ka Champion"
+- **XP System**: Earn XP for completing modules, daily drills, incident reports
+- **Badges**: "Fire Fighter 🔥", "Gas Guard 💨", "Machine Master ⚙️", "Safety Star ⭐"
+- **Leaderboards**: Mine-level, district-level, state-level rankings
+- **Streaks**: "7-Day Safety Streak" with bonus rewards
+- **Rewards**: Top performers get digital certificates of excellence, recognition on admin dashboard
+
+### 🔥 Feature 4: "Zero-Literacy" Voice-First Interface & Desi Humor
+- **Designed for Illiteracy**: The app requires zero reading skills. Every single button has a voice-over that plays when tapped once (tap twice to execute), ensuring illiterate workers know exactly what they are pressing.
+- **Relatable Audio Feedback**: Uses lighthearted, culturally relatable humor during AR tasks. If a worker grabs the wrong extinguisher, a voice might say, "अरे भाई, पानी से बिजली की आग बुझाएगा क्या? दिवाली मनानी है?" (Bro, are you going to put out an electrical fire with water? Are we celebrating Diwali?).
+- **Entire app navigable by voice** in Hindi and Santali using TTS (Sarvam AI / Indic Parler-TTS).
+- Worker can simply say "आगे" (next), "फिर से" (repeat), or "मदद" (help) to navigate without touching the screen.
+
+### 🔥 Feature 5: Adaptive Difficulty & AI-Powered Weak Spot Detection
+- ML model tracks which safety concepts a worker struggles with
+- Automatically generates more practice scenarios for weak areas
+- Supervisor gets a "Training Gap Report" per worker
+
+### 🔥 Feature 6: QR Certificate with Blockchain Verification
+- Certificate contains: Worker photo, training modules completed, scores, date, issuing authority
+- **QR code** embeds a SHA-256 hash of the certificate data
+- Hash stored on a lightweight blockchain (or simulated chain for hackathon)
+- **Any DGMS inspector** scans QR → instant verification via web portal
+- Prevents the rampant **fake certificate problem** mentioned in the PS
+
+### 🔥 Feature 7: Emergency Response Mode
+- **SOS button** always visible on app
+- Sends GPS coordinates + worker ID + mine ID to control room
+- Triggers SMS to registered family contacts in local language
+- Activates phone flashlight + alarm sound as distress signal
+
+### 🔥 Feature 8: Safety-GPT & Offline Knowledge Base
+- **Online Mode**: An AI assistant (fine-tuned on DGMS regulations and safety manuals) that answers worker queries in their local language via voice or text (e.g., "What PPE do I need for welding?").
+- **Offline Mode**: A locally stored, highly compressed knowledge base with search functionality. If a worker is underground with no signal, they still have instant access to critical safety procedures and first-aid steps.
+
+---
+
+## 4. How We Are Different from Existing Solutions
+
+### Competitive Analysis
+
+| Solution | What They Do | Our Advantage |
+|:---------|:-------------|:--------------|
+| **Nsflow** (Enterprise AR) | AR remote support for industrial workers | Enterprise-only, expensive, English-only, no training/certification. We are **free, localized, training-focused** |
+| **3D Walkabout** (Australia) | Custom AR apps for mining | Requires AR headsets (HoloLens), not mobile. We run on **₹8,000 Android phones** |
+| **WVU HoloLens Research** | AR blind-spot training for haul trucks | Research prototype, not deployable. We deliver a **working APK** |
+| **FusionVR / Vikaki** (India) | Custom VR training solutions | Require VR headsets, project-based pricing. We are **smartphone-only, scalable** |
+| **MineExcellence** | Web-based safety management | No AR, no training modules, just compliance tracking. We have **training + tracking** |
+| **Duolingo-style safety apps** | Gamified learning | No AR, no industrial context, English-only. We have **AR + gamification + localization** |
+
+### What We Integrate From Existing Solutions
+- **Nsflow's concept** of step-by-step digital workflows → our LOTO and evacuation AR sequences
+- **MineExcellence's compliance tracking** → our admin dashboard goes further with predictive analytics
+- **Duolingo's spaced repetition** → our daily drill system
+- **Government's DigiLocker concept** → our QR-verified certificates follow the same trust model
+
+---
+
+## 5. SIH Winning Strategy (Lessons from Past Winners)
+
+> [!TIP]
+> Based on extensive research of SIH 2022, 2023, 2024, and **2025** winning teams:
+
+### What Judges Look For (Ranked by Priority)
+
+| Priority | Factor | How We Nail It |
+|:---------|:-------|:---------------|
+| 1 | **Working Prototype** | We demo 2 complete AR modules + assessment + certificate + dashboard — all functional |
+| 2 | **Deployment-Ready (2025 Trend)** | Judges now look past "cool tech." We provide a full ecosystem ready to deploy in real mines on Day 1. |
+| 3 | **Problem-Solution Fit** | We map every PS requirement to a feature. We add DGMS regulation references |
+| 4 | **Hardware Feasibility (2025 Trend)** | No expensive VR headsets (like Meta Quest). Our AR runs on standard ₹8,000 mid-range Androids, perfectly matching the PS constraints and industry reality. |
+| 5 | **Innovation** | Voice-first Santali interface + gamified spaced repetition + AI Assistant = **no one else has this combo** |
+| 6 | **Scalability** | Offline-first, modular architecture — ready for national rollout |
+| 7 | **Presentation & Pivot Ability** | Government Rollout Strategy, impact metrics, and a dedicated team member for documentation (a key 2025 success metric). |
+
+### Critical Presentation Tips
+- **Start with the human story**: "Ramesh, 19, from Khunti, joins a coal mine with zero training. 30 days later..."
+- **Show the working app**, not slides. Demo > Deck.
+- **Cite data**: 48 fatal accidents, <20% retention, DGMS mandate gaps
+- **End with scale**: "This platform can train 5 lakh workers across India's 1,200+ mines"
+- Include a **Government Rollout Strategy** showing how the state will deploy and fund it
+
+---
+
+## 6. Tech Stack
+
+### Mobile App (Android)
+
+| Layer | Technology | Why |
+|:------|:-----------|:----|
+| **Framework** | **Unity + AR Foundation** | Cross-platform AR, rich 3D rendering, largest ecosystem for AR assets. Judges recognize Unity. |
+| **AR Engine** | **Google ARCore** (via AR Foundation) | Plane detection, image tracking, light estimation — all needed for our scenarios |
+| **3D Assets** | **Blender** (modeling) + **glTF/GLB** format | Free, lightweight, industry standard |
+| **Language** | **C#** (Unity scripts) | Unity's primary language |
+| **Offline DB** | **SQLite** (via Unity plugin) | Stores progress, certificates, training data locally |
+| **TTS/Voice** | **Sarvam AI API** + **Indic Parler-TTS** (offline fallback) | Best Santali + Hindi voice quality available |
+| **QR Generation** | **ZXing.Net** library | Proven QR generation within Unity |
+| **Video Player** | **Unity VideoPlayer** component | Embedded training videos |
+| **Animations** | **Lottie for Unity** | Lightweight JSON animations for UI |
+
+### Web Admin Dashboard
+
+| Layer | Technology | Why |
+|:------|:-----------|:----|
+| **Frontend** | **React.js** + **Recharts** + **Tailwind CSS** | Fast, modern, beautiful dashboards |
+| **Backend** | **Node.js + Express** | Lightweight REST API, easy to deploy |
+| **Database** | **Supabase (PostgreSQL)** | Open-source, relational data for complex querying (e.g., mines, workers, certs) |
+| **Auth** | **Supabase Auth** | Open-source, prevents vendor lock-in (preferred by govt judges) |
+| **Hosting** | **Vercel / Render** | Free tier sufficient for hackathon |
+| **QR Verification** | **Public REST endpoint** | Anyone can verify a certificate by scanning QR |
+
+### Certificate & Blockchain
+
+| Layer | Technology | Why |
+|:------|:-----------|:----|
+| **Hash** | **SHA-256** | Industry standard, deterministic |
+| **Blockchain (Demo)** | **Ganache (local Ethereum)** or **simulated chain** | For hackathon demo; production would use Polygon/Solana |
+| **Smart Contract** | **Solidity** (basic) | Stores certificate hashes on-chain |
+
+### AI/ML Components
+
+| Component | Technology |
+|:----------|:-----------|
+| **Weak-spot detection** | Simple analytics on quiz response data (rule-based for hackathon, ML for production) |
+| **Voice commands** | Android Speech Recognition API (offline Hindi supported) |
+| **Language detection** | Heuristic-based (user selects language; auto-detect as v2) |
+
+### Architecture Diagram
+
+```mermaid
+graph TB
+    subgraph "📱 Mobile App (Unity + ARCore)"
+        A[Worker Login<br>Admin ID / QR Scan] --> B[Language Selection<br>Hindi / Santali / English]
+        B --> C[Training Dashboard]
+        C --> D[📹 Video Module]
+        C --> E[📝 Quiz Module]
+        C --> F[🎮 AR Simulation]
+        C --> G[✅ Assessment]
+        G --> H[🏅 Certificate Gen]
+        C --> I[🆘 SOS Button]
+        C --> J[📊 Progress & XP]
+        C --> K[📸 Incident Report]
+        F --> L[ARCore Engine<br>Plane Detection<br>Image Tracking]
+    end
+
+    subgraph "☁️ Backend (Node.js + Supabase)"
+        M[REST API] --> N[Worker Records]
+        M --> O[Training Analytics]
+        M --> P[Certificate Store]
+        M --> Q[Incident Reports]
+    end
+
+    subgraph "🖥️ Admin Dashboard (React)"
+        R[Compliance Overview] --> S[Worker Progress]
+        R --> T[Risk Heatmap]
+        R --> U[Audit Reports]
+        R --> V[Certificate Verify]
+    end
+
+    subgraph "🔗 Blockchain Layer"
+        W[Smart Contract] --> X[Certificate Hashes]
+    end
+
+    H -->|Sync when online| M
+    J -->|Sync when online| M
+    K -->|Upload| M
+    M --> R
+    P --> W
+    V -->|Verify Hash| W
+```
+
+---
+
+## 7. User Flows
+
+### 7.1 Worker Flow (Primary User)
+
+```mermaid
+flowchart TD
+    A["📱 Open App"] --> B{"First Time?"}
+    B -->|Yes| C["🔐 Simple Login<br>Enter Worker ID<br>or Scan Admin QR"]
+    C --> D["🌐 Select Language<br>Hindi / Santali / English"]
+    D --> E["👋 Onboarding Tour<br>Voice-guided app intro<br>in selected language"]
+    B -->|No| F["🔐 Auto-Login<br>or Face ID"]
+
+    E --> G["🏠 Home Dashboard"]
+    F --> G
+
+    G --> H["📚 Training Modules"]
+    G --> I["🎯 Daily Drill"]
+    G --> J["🏅 My Certificates"]
+    G --> K["📊 My Progress"]
+    G --> L["🆘 Emergency SOS"]
+    G --> M["📸 Report Hazard"]
+    G --> N["👥 Buddy Training"]
+    G --> Z["🤖 AI Chatbot /<br>Offline Manual"]
+
+    H --> O["Select Module<br>e.g. Fire Safety"]
+    O --> P["Stage 1: 📹 Watch Video<br>(2-3 min, voice-over)"]
+    P --> Q["Stage 2: 📝 Flashcards + Quiz<br>(Interactive, visual)"]
+    Q --> R["Stage 3: 🎮 Guided AR Practice<br>(Voice hints & help)"]
+    R --> S["Stage 4: ✅ AR Practical Exam<br>(No hints, timed, scored)"]
+    S --> T{"Passed AR Exam?"}
+    T -->|Yes| U["🏅 Certificate Generated<br>QR Code + Download"]
+    T -->|No| V["🔄 Retry Module<br>(Weak areas highlighted)"]
+    V --> R
+
+    style G fill:#1a1a2e,color:#e94560
+    style U fill:#0f3460,color:#16c79a
+    style L fill:#e94560,color:#fff
+```
+
+### 7.2 Worker Home Dashboard Components
+
+```
+┌────────────────────────────────────────────────┐
+│  🏠 JohAR                    🔔  👤   │
+│  "नमस्ते, रामेश!"   (Santali greeting)        │
+│                                                │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐       │
+│  │ 🔥 अग्नि │ │ 💨 गैस   │ │ ⚙️ मशीन  │       │
+│  │ सुरक्षा  │ │ सुरक्षा  │ │ सुरक्षा  │       │
+│  │ ██████░░ │ │ ████░░░░ │ │ ░░░░░░░░ │       │
+│  │  75%     │ │  50%     │ │  New!    │       │
+│  └──────────┘ └──────────┘ └──────────┘       │
+│                                                │
+│  🎯 आज का ड्रिल  [शुरू करें →]               │
+│  ┌────────────────────────────────────┐       │
+│  │ "कौन सा बुझाने वाला तेल की        │       │
+│  │  आग के लिए है?" 🕐 30 sec          │       │
+│  └────────────────────────────────────┘       │
+│                                                │
+│  ┌─── Your Stats ────────────────────┐        │
+│  │ 🏆 Rank: #12/340   ⭐ XP: 2,450  │        │
+│  │ 🔥 Streak: 5 days  🏅 Badges: 3  │        │
+│  └───────────────────────────────────┘        │
+│                                                │
+│  [📚 Modules] [🏅 Certs] [📸 Report] [🆘 SOS]│
+└────────────────────────────────────────────────┘
+```
+
+### 7.3 AR Simulation Flow (Fire Safety Example)
+
+```mermaid
+flowchart LR
+    A["📱 Point Camera<br>at surroundings"] --> B["🔍 ARCore detects<br>floor plane"]
+    B --> C["🔥 Virtual fire<br>spawns in room"]
+    C --> D["📢 Voice: 'आग लगी है!<br>बाहर निकलने का<br>रास्ता ढूंढो!'"]
+    D --> E["🚪 AR exit signs<br>appear on walls"]
+    E --> F["👆 Tap correct exit<br>within time limit"]
+    F --> G["🧯 AR extinguisher<br>appears"]
+    G --> H["📱 Shake phone =<br>spray extinguisher"]
+    H --> I["✅ Fire reduced!<br>Score displayed"]
+    I --> J["📊 Performance<br>breakdown"]
+
+    style C fill:#e94560,color:#fff
+    style I fill:#16c79a,color:#fff
+```
+
+### 7.4 Admin/Supervisor Flow
+
+```mermaid
+flowchart TD
+    A["🖥️ Open Web Dashboard"] --> B["🔐 Login<br>Admin/Supervisor/DGMS"]
+    B --> C["📊 Compliance Overview"]
+
+    C --> D["👥 Worker Management"]
+    C --> E["📈 Training Analytics"]
+    C --> F["🗺️ Risk Heatmap"]
+    C --> G["📋 Audit Reports"]
+    C --> H["🔍 Certificate Verification"]
+    C --> I["📝 Module Management"]
+    C --> J["🔔 Broadcast Alerts"]
+
+    D --> D4["📥 Bulk Worker Onboarding<br>(Upload CSV)"]
+    D --> D1["View all workers & Generate Login QRs"]
+    D --> D2["Filter by mine/factory"]
+    D --> D3["Training gap alerts"]
+
+    E --> E1["Completion rates by module"]
+    E --> E2["Score distributions"]
+    E --> E3["Time-to-completion trends"]
+    E --> E4["Weak-area analysis"]
+
+    F --> F1["Geographic view of<br>Jharkhand mines"]
+    F --> F2["Color-coded compliance<br>Red/Yellow/Green"]
+    F --> F3["Click mine → drill down"]
+
+    G --> G1["DGMS-format reports"]
+    G --> G2["Export PDF/Excel"]
+    G --> G3["Scheduled auto-reports"]
+
+    H --> H1["Scan QR / Enter ID"]
+    H --> H2["Blockchain verification"]
+    H --> H3["Full training history"]
+
+    style C fill:#1a1a2e,color:#e94560
+    style F fill:#0f3460,color:#16c79a
+```
+
+### 7.5 Admin Dashboard Components
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│  JohAR Admin Portal       [Mine: Dhanbad Coal #7 ▾] │
+├──────────┬───────────────────────────────────────────────────┤
+│          │                                                   │
+│ 📊 Home  │  Overall Compliance: ████████░░ 78%              │
+│          │                                                   │
+│ 👥 Workers│  ┌─────────┐ ┌─────────┐ ┌─────────┐           │
+│          │  │  2,340   │ │   48    │ │   12    │           │
+│ 📚 Modules│  │ Workers  │ │ Pending │ │ Expired │           │
+│          │  │ Trained  │ │ Certs   │ │ Certs   │           │
+│ 📈 Analytics│  └─────────┘ └─────────┘ └─────────┘           │
+│          │                                                   │
+│ 🗺️ Map   │  Training Completion by Module                   │
+│          │  Fire Safety    ████████████████░░ 89%            │
+│ 📋 Reports│  Gas Protocol   ██████████░░░░░░░░ 56%            │
+│          │  LOTO           ████░░░░░░░░░░░░░░ 23%            │
+│ 🔍 Verify │  Electrical     ██████████████░░░░ 72%            │
+│          │                                                   │
+│ ⚠️ Alerts │  ⚠️ ALERTS                                       │
+│          │  • 48 workers overdue for Gas Protocol cert       │
+│ ⚙️ Settings│  • Mine #12 compliance dropped below 50%         │
+│          │  • 3 incident reports pending review              │
+│ 📢 Broadcast│ [Send Alert: "Storm Warning" → All Workers]      │
+└──────────┴───────────────────────────────────────────────────┘
+```
+
+---
+
+## 8. Detailed Module Design (2 Complete AR Modules for Demo)
+
+### Module 1: Fire & Explosion Response 🔥
+
+| Stage | Content | Interaction |
+|:------|:--------|:------------|
+| **Watch** | 2-min animated video showing fire scenarios in a coal mine. Voice-over in selected language. Jharkhand mine setting. | Auto-play, subtitles |
+| **Learn** | 5 interactive flashcards: Types of fires (A/B/C/D), Extinguisher types (Water/CO2/Foam/DCP), Evacuation rules, Assembly points, Emergency numbers | Swipe cards, tap to flip |
+| **AR Sim** | **Guided Practice**: Fire in workshop — AR identifies exits, guides navigation. Electrical fire — highlights correct extinguisher, shows PASS technique overlay. Includes humorous warnings for wrong moves. | Camera-based AR, tap/swipe/shake interactions |
+| **Assess** | **AR Practical Exam**: Unannounced virtual fire spawns. No hints. Worker must physically turn to the correct exit or select the correct extinguisher in AR within 30 seconds. Score based on speed and accuracy. | Timed AR interaction |
+
+### Module 2: Gas Leak & Confined Space Protocol 💨
+
+| Stage | Content | Interaction |
+|:------|:--------|:------------|
+| **Watch** | 2-min animated video showing gas leak in underground mine. Shows symptoms of CO/CH4 exposure. | Auto-play, subtitles |
+| **Learn** | 5 flashcards: Gas types & dangers, PPE for confined spaces, Air quality testing, Buddy system rules, Emergency evacuation signals | Swipe cards, tap to flip |
+| **AR Sim** | **Guided Practice**: Detect hazard zone (AR red overlay), select correct PPE. Funny voice prompts if wrong PPE is picked ("Helmet भूल गया? सिर पत्थर का है क्या?"). Confined space entry protocol with visual hints. | Camera AR, drag-and-drop, voice commands |
+| **Assess** | **AR Practical Exam**: Simulated gas leak. Worker must equip correct AR PPE and move to safe zone within a time limit. No hints provided. Score based on correct sequence of actions. | Timed AR interaction |
+
+---
+
+## 9. Extra Features for Complete System
+
+### 9.1 Features Beyond PS Requirements
+
+| Feature | Description | Impact |
+|:--------|:------------|:-------|
+| **Toolbox Talk Generator** | Admin can create quick 5-min talk topics, push to all workers' phones for morning briefing | Replaces paper-based toolbox talks |
+| **Seasonal Safety Alerts** | Auto-triggered modules: Monsoon flooding, Summer heatstroke, Winter fog visibility | Context-aware training |
+| **Family Dashboard (SMS)** | Worker's family gets monthly SMS: "रामेश ने 3 safety modules पूरे किए। सुरक्षित है।" | Emotional connection, trust building |
+| **Frictionless Worker Onboarding** | Admin uploads CSV of workers → system generates unique "Login QRs" → distributed as ID cards. Zero typing required by workers. | Solves digital illiteracy barrier |
+| **Photo-based Hazard Reporting** | Worker photographs unsafe conditions → tagged with GPS → routed to supervisor | Crowdsourced safety intelligence |
+| **Shift-Start Safety Checklist** | Digital pre-shift checklist replacing paper registers — PPE worn, equipment checked, buddy assigned | DGMS compliance |
+| **Multi-Mine Support** | Single admin can manage multiple mine/factory locations from one dashboard | Scalability |
+| **Accessibility Mode** | Extra-large fonts, high contrast, screen reader support, haptic feedback | Inclusive design |
+| **Data Export for DGMS** | One-click export of training records in DGMS-mandated format (Form T(2)) | Regulatory compliance |
+
+---
+
+## 10. Jharkhand-Themed Design System
+
+### Color Palette
+
+| Color | Hex | Inspiration |
+|:------|:----|:------------|
+| **Laterite Red** | `#C0392B` | Jharkhand's red soil |
+| **Sal Forest Green** | `#27AE60` | Dense sal forests |
+| **Coal Dark** | `#1A1A2E` | Mining heritage |
+| **Mica Gold** | `#F39C12` | Mica deposits |
+| **Sky Blue** | `#3498DB` | Clear Jharkhand skies |
+| **Warning Orange** | `#E67E22` | Safety signals |
+| **Success Teal** | `#16C79A` | Achievement |
+
+### Typography
+- **Primary**: Noto Sans Devanagari (Hindi) + Noto Sans Ol Chiki (Santali)
+- **English fallback**: Inter / Roboto
+- **Large sizes** throughout (min 16sp) for readability
+
+### Design Principles (For Low Digital Literacy)
+1. **Zero-Text Navigation**: Rely entirely on universally understood icons, color-coding (Green = Go/Safe, Red = Stop/Danger), and audio cues.
+2. **"One Big Button" Rule**: Screens should never have cluttered menus. The worker should always have one massive, obvious primary action (e.g., a giant "Start Training" button).
+3. **One-Hand Operation**: All key actions reachable with a thumb, recognizing workers might be wearing gloves or holding equipment.
+4. **High Contrast**: Works in bright sunlight (outdoor mine) and dark (underground).
+5. **Familiar Metaphors**: Mining helmet icon for profile, pickaxe for progress, lamp for knowledge.
+
+---
+
+## 11. Offline-First Architecture
+
+```mermaid
+flowchart TD
+    A["App Launch"] --> B{"Internet<br>Available?"}
+    B -->|Yes| C["Sync pending data<br>Download new modules<br>Upload certificates"]
+    B -->|No| D["Continue in<br>Offline Mode"]
+
+    C --> E["Full Functionality"]
+    D --> F["Available Offline"]
+
+    F --> F1["✅ All downloaded<br>training modules"]
+    F --> F2["✅ AR simulations<br>(pre-cached 3D assets)"]
+    F --> F3["✅ Assessments<br>+ local scoring"]
+    F --> F4["✅ Certificate generation<br>(queued for sync)"]
+    F --> F5["✅ Progress tracking<br>(SQLite local)"]
+    F --> F6["⚠️ Leaderboard<br>(shows last synced)"]
+    F --> F7["⚠️ Incident upload<br>(queued)"]
+    F --> F8["✅ SOS<br>(uses SMS fallback)"]
+```
+
+---
+
+## 12. Development Roadmap & Task Division
+
+### Phase 1: Foundation (Week 1-2)
+- [ ] Unity project setup with AR Foundation + ARCore
+- [ ] Design system implementation (Jharkhand theme)
+- [ ] Basic app navigation and screens
+- [ ] SQLite database schema for offline storage
+- [ ] Backend API (Node.js + Supabase) scaffold
+
+### Phase 2: Core Training Modules (Week 3-4)
+- [ ] Video player integration with multilingual subtitles
+- [ ] Interactive flashcard/quiz system
+- [ ] AR Module 1: Fire & Explosion Response
+- [ ] AR Module 2: Gas Leak & Confined Space
+- [ ] Assessment engine with scoring
+
+### Phase 3: Gamification & Certification (Week 5)
+- [ ] XP, badges, leaderboard system
+- [ ] Daily drill / spaced repetition engine
+- [ ] QR-based certificate generation
+- [ ] Blockchain hash anchoring (demo)
+
+### Phase 4: Admin Dashboard & Polish (Week 6)
+- [ ] React admin dashboard with all components + Alert broadcasting
+- [ ] Data sync (offline → cloud)
+- [ ] Localization (Hindi + Santali + English)
+- [ ] TTS/Voice integration
+- [ ] SOS, incident reporting, & offline knowledge base
+- [ ] AI Chatbot integration (online mode)
+
+### Phase 5: Demo Preparation (Week 7)
+- [ ] Demo video recording
+- [ ] Pitch deck preparation
+- [ ] GitHub repository cleanup + README
+- [ ] Edge case testing
+- [ ] Performance optimization
+
+---
+
+## 13. Presentation Strategy
+
+### Pitch Structure (10 minutes)
+
+| Time | Section | Content |
+|:-----|:--------|:--------|
+| 0:00-1:00 | **The Story** | "Meet Ramesh from Khunti..." (emotional hook with real DGMS accident data) |
+| 1:00-2:00 | **The Problem** | 48 deaths, <20% retention, no digital platform, fake certificates |
+| 2:00-3:00 | **Our Solution** | JohAR overview — the 4-stage blended learning + AR demo |
+| 3:00-6:00 | **Live Demo** | Walk through worker flow: registration → video → quiz → AR sim → certificate |
+| 6:00-7:00 | **Admin Dashboard** | Show compliance view, risk heatmap, certificate verification |
+| 7:00-8:00 | **Innovation** | Voice-first Santali, gamification data, AI Chatbot, offline-first |
+| 8:00-9:00 | **Impact & Scale** | Government Rollout Strategy, DGMS integration path, national vision |
+| 9:00-10:00 | **Q&A Readiness** | "We've thought of everything" — show depth |
+
+### Government Adoption & Rollout Strategy
+
+| Phase | Strategic Action |
+|:------|:-----------------|
+| **Phase 1: Pilot (0-3 Months)** | Deploy in 5 state-owned coal mines. Train 1,000 workers. Gather baseline retention data vs traditional methods. |
+| **Phase 2: Policy Integration (3-6 Months)** | Department of Higher & Technical Education partners with DGMS to officially recognize AR certificates as valid compliance. |
+| **Phase 3: State-Wide Mandate (6-12 Months)** | Rollout to private sector (Tata Steel, private mica units). App provided free; state charges minimal ₹50/worker certification fee to sustain cloud costs. |
+| **Sponsorship/Funding** | CSR funds from major mining corps (Coal India, Tata) to fund initial development and server costs, requiring zero net-budget from the State. |
+| **Maintenance** | Open-source handover to state IT department (JAP-IT) or maintained via an AMC contract. |
+
+---
+
+> [!NOTE]
+> This plan is designed to make you **unforgettable** to the judges. Every feature maps to a real pain point. Every design choice is backed by research. Every technical decision is justified. You're not just solving PS 26041 — you're showing what a national-scale safety training platform looks like.
+>
+> **Let's build JohAR. Let's win SIH 2026.** 🏆
