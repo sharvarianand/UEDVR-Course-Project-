@@ -130,5 +130,4 @@ Make sure scenes are added in the following order in `File > Build Profiles / Bu
 ## 👥 Team
 - **Project Owner**: [sharvarianand](https://github.com/sharvarianand)
 - **Team**: UEDVR Course Project Team
-- **Hackathon**: Smart India Hackathon 2026
 - **Repository**: [https://github.com/sharvarianand/UEDVR-Course-Project-](https://github.com/sharvarianand/UEDVR-Course-Project-)
