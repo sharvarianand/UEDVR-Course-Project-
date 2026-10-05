@@ -43,6 +43,13 @@
                     <span class="nav-badge" id="badgeTrainings">0</span>
                 </button>
             </li>
+            <li class="nav-item" data-tab="certificates">
+                <button id="navCertificates">
+                    <i data-lucide="award" class="nav-lucide-icon"></i>
+                    <span>Certificates</span>
+                    <span class="nav-badge" id="badgeCertificates">0</span>
+                </button>
+            </li>
         </ul>
 
         <div class="sidebar-footer">
@@ -51,7 +58,7 @@
                 <span id="pingText">Connecting...</span>
                 <span id="realtimePill" class="realtime-live-badge" title="Live Supabase WebSocket Channel">● LIVE</span>
             </div>
-            <div style="font-size: 11px; color: var(--text-dim);">JohAR Safety v2.5 • Coal Mine DGMS Compliant</div>
+            <div style="font-size: 11px; color: var(--text-dim);">JohAR Safety v2.6 • DGMS Certificate Registry Enabled</div>
         </div>
     </aside>
 
@@ -73,6 +80,10 @@
                 <button class="btn" id="btnOpenSettings" title="Configure Supabase Database">
                     <i data-lucide="settings" style="width: 14px; height: 14px;"></i>
                     <span>Settings</span>
+                </button>
+                <button class="btn btn-primary" id="btnExportAllCerts" title="Export All Certificates as CSV" style="display:none;">
+                    <i data-lucide="download" style="width: 14px; height: 14px;"></i>
+                    <span>Export CSV</span>
                 </button>
             </div>
         </header>
@@ -231,6 +242,33 @@
                             </tbody>
                         </table>
                     </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: DGMS Certificates Registry -->
+            <div class="tab-view" id="tab-certificates">
+                <!-- Header Banner -->
+                <div class="panel" style="background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(16,185,129,0.06) 100%); border: 1px solid rgba(245,158,11,0.2); margin-bottom: 16px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 44px; height: 44px; background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="award" style="width: 22px; height: 22px; color: #f59e0b;"></i>
+                            </div>
+                            <div>
+                                <h3 style="color: #fff; font-size: 15px; font-weight: 700; margin: 0;">DGMS Mine Safety Credential Registry</h3>
+                                <p style="color: var(--text-muted); font-size: 12px; margin: 2px 0 0;">Official DGMS & Coal India Limited accredited personnel certificates — view, print or download high-resolution PNG.</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span id="certRegistryCount" style="font-family: 'JetBrains Mono', monospace; font-size: 12px; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25); color: #10b981; padding: 4px 10px; border-radius: 20px; font-weight: 600;">0 Registered</span>
+                            <input type="text" id="certSearchInput" class="search-input" placeholder="Search by name or ID..." style="width: 200px;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Certificates Cards Grid -->
+                <div id="certificatesGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px;">
+                    <!-- Dynamically populated -->
                 </div>
             </div>
 
@@ -417,6 +455,38 @@
                 <button type="button" class="btn btn-cancel">Close</button>
                 <button type="button" class="btn btn-primary" id="btnPrintQRBadge">
                     Print / Save Badge
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Certificate Preview -->
+    <div class="modal-overlay" id="modalCertPreview" style="z-index: 9999;">
+        <div class="modal-box" style="max-width: 780px; width: 95%; padding: 0; overflow: hidden;">
+            <div class="modal-header" style="padding: 14px 20px; background: rgba(245,158,11,0.07); border-bottom: 1px solid rgba(245,158,11,0.2);">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i data-lucide="award" style="width: 18px; height: 18px; color: #f59e0b;"></i>
+                    <div>
+                        <h3 style="margin: 0; font-size: 14px;">Official DGMS Safety Certificate</h3>
+                        <span id="certPreviewId" style="font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--text-muted);"></span>
+                    </div>
+                </div>
+                <button class="modal-close">&times;</button>
+            </div>
+
+            <!-- Certificate Canvas Preview -->
+            <div style="background: #090A0F; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 16px;">
+                <canvas id="certPreviewCanvas" style="width: 100%; max-width: 740px; border-radius: 8px; border: 1px solid rgba(245,158,11,0.2); box-shadow: 0 8px 32px rgba(0,0,0,0.6);"></canvas>
+            </div>
+
+            <!-- Actions -->
+            <div class="form-actions" style="padding: 14px 20px; background: rgba(255,255,255,0.02); border-top: 1px solid rgba(255,255,255,0.06);">
+                <button type="button" class="btn btn-cancel" onclick="document.getElementById('modalCertPreview').classList.remove('active')">Close</button>
+                <button type="button" class="btn" onclick="window.certPrintAction()" style="display: inline-flex; align-items: center; gap: 6px;">
+                    <i data-lucide="printer" style="width: 14px; height: 14px;"></i> Print PDF
+                </button>
+                <button type="button" class="btn btn-primary" id="btnDownloadCert" onclick="window.certDownloadAction()" style="display: inline-flex; align-items: center; gap: 6px;">
+                    <i data-lucide="download" style="width: 14px; height: 14px;"></i> Download PNG
                 </button>
             </div>
         </div>

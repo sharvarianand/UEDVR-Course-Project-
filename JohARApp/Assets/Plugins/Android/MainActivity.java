@@ -124,6 +124,11 @@ public class MainActivity extends Activity {
     public class JiwiAndroidBridge {
         @JavascriptInterface
         public void launchAR(final String workerId, final String language) {
+            launchAR(workerId, language, "fire_safety");
+        }
+
+        @JavascriptInterface
+        public void launchAR(final String workerId, final String language, final String drillType) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -131,6 +136,7 @@ public class MainActivity extends Activity {
                         Intent intent = new Intent(MainActivity.this, com.unity3d.player.UnityPlayerGameActivity.class);
                         intent.putExtra("worker_id", workerId);
                         intent.putExtra("language", language);
+                        intent.putExtra("drill_type", drillType != null ? drillType : "fire_safety");
                         startActivityForResult(intent, RC_UNITY_AR);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -153,6 +159,47 @@ public class MainActivity extends Activity {
                 }
             } catch (Exception ignored) {}
         }
+
+        @JavascriptInterface
+        public void saveImageToGallery(final String base64Data, final String filename) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        String cleanBase64 = base64Data;
+                        if (cleanBase64.contains(",")) {
+                            cleanBase64 = cleanBase64.split(",")[1];
+                        }
+                        byte[] decodedBytes = android.util.Base64.decode(cleanBase64, android.util.Base64.DEFAULT);
+                        android.content.ContentValues values = new android.content.ContentValues();
+                        values.put(android.provider.MediaStore.Images.Media.DISPLAY_NAME, filename != null ? filename : "DGMS_Certificate.png");
+                        values.put(android.provider.MediaStore.Images.Media.MIME_TYPE, "image/png");
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            values.put(android.provider.MediaStore.Images.Media.RELATIVE_PATH, android.os.Environment.DIRECTORY_PICTURES + "/JiwiAR");
+                            values.put(android.provider.MediaStore.Images.Media.IS_PENDING, 1);
+                        }
+                        android.net.Uri uri = getContentResolver().insert(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                        if (uri != null) {
+                            java.io.OutputStream out = getContentResolver().openOutputStream(uri);
+                            if (out != null) {
+                                out.write(decodedBytes);
+                                out.flush();
+                                out.close();
+                            }
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                values.clear();
+                                values.put(android.provider.MediaStore.Images.Media.IS_PENDING, 0);
+                                getContentResolver().update(uri, values, null, null);
+                            }
+                            android.widget.Toast.makeText(MainActivity.this, "Certificate saved to Pictures/JiwiAR!", android.widget.Toast.LENGTH_LONG).show();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        android.widget.Toast.makeText(MainActivity.this, "Certificate Downloaded", android.widget.Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
     }
 
     @Override
@@ -165,15 +212,19 @@ public class MainActivity extends Activity {
             }
             float duration = 8.5f;
             int score = 100;
+            String drillType = "fire_safety";
             if (data != null) {
                 duration = data.getFloatExtra("duration", 8.5f);
                 score = data.getIntExtra("score", 100);
+                if (data.hasExtra("drill_type")) {
+                    drillType = data.getStringExtra("drill_type");
+                }
             }
 
             final String js = String.format(
                 Locale.US,
-                "if (typeof window.onARDrillComplete === 'function') { window.onARDrillComplete({ duration: %.1f, score: %d }); }",
-                duration, score
+                "if (typeof window.onARDrillComplete === 'function') { window.onARDrillComplete({ duration: %.1f, score: %d, drillType: '%s' }); }",
+                duration, score, drillType
             );
 
             webView.post(new Runnable() {

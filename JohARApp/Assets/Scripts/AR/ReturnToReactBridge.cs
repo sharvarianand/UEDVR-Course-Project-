@@ -14,15 +14,14 @@ namespace JohAR.AR
     /// On Android: Closes the Unity activity via currentActivity.finish() or triggers deep-link.
     /// In Editor / Standalone: Resets the AR drill gracefully.
     /// </summary>
-    public class ReturnToReactBridge : MonoBehaviour, IPointerClickHandler, IPointerDownHandler
+    public class ReturnToReactBridge : MonoBehaviour, IPointerClickHandler
     {
         private Button button;
-        private RectTransform rectTransform;
         private static bool isReturning = false;
 
         private void Awake()
         {
-            rectTransform = GetComponent<RectTransform>();
+            isReturning = false;
             button = GetComponent<Button>();
             if (button != null)
             {
@@ -34,51 +33,6 @@ namespace JohAR.AR
         public void OnPointerClick(PointerEventData eventData)
         {
             ExecuteReturn();
-        }
-
-        public void OnPointerDown(PointerEventData eventData)
-        {
-            ExecuteReturn();
-        }
-
-        private void Update()
-        {
-            if (isReturning || !gameObject.activeInHierarchy) return;
-
-            bool isTapped = false;
-            Vector2 tapPos = Vector2.zero;
-
-#if ENABLE_INPUT_SYSTEM
-            if (Touchscreen.current != null && (Touchscreen.current.primaryTouch.press.wasPressedThisFrame || Touchscreen.current.primaryTouch.press.isPressed))
-            {
-                tapPos = Touchscreen.current.primaryTouch.position.ReadValue();
-                isTapped = true;
-            }
-            else if (Mouse.current != null && (Mouse.current.leftButton.wasPressedThisFrame || Mouse.current.leftButton.isPressed))
-            {
-                tapPos = Mouse.current.position.ReadValue();
-                isTapped = true;
-            }
-#else
-            if (Input.touchCount > 0)
-            {
-                tapPos = Input.GetTouch(0).position;
-                isTapped = true;
-            }
-            else if (Input.GetMouseButtonDown(0) || Input.GetMouseButton(0))
-            {
-                tapPos = Input.mousePosition;
-                isTapped = true;
-            }
-#endif
-
-            if (isTapped && rectTransform != null)
-            {
-                if (RectTransformUtility.RectangleContainsScreenPoint(rectTransform, tapPos, null))
-                {
-                    ExecuteReturn();
-                }
-            }
         }
 
         public static void ExecuteReturn()
@@ -103,27 +57,44 @@ namespace JohAR.AR
                 {
                     if (currentActivity != null)
                     {
-                        bool wasCompleted = (ARFireManager.Instance != null && ARFireManager.Instance.IsFireExtinguished);
+                        bool fireCompleted = (ARFireManager.Instance != null && ARFireManager.Instance.IsFireExtinguished);
+                        bool gasCompleted = (ARGasLeakManager.Instance != null && ARGasLeakManager.Instance.IsCompleted);
+                        bool wasCompleted = fireCompleted || gasCompleted;
                         string currentWorkerId = PlayerPrefs.GetString("WorkerID", "W-7042");
 
                         if (wasCompleted)
                         {
-                            float duration = PlayerPrefs.GetFloat($"Drill_FireSafety_Time_{currentWorkerId}", 8.5f);
-                            int score = PlayerPrefs.GetInt($"Drill_FireSafety_Score_{currentWorkerId}", 100);
+                            float duration = 8.5f;
+                            int score = 100;
+                            string drillType = "fire_safety";
+
+                            if (gasCompleted)
+                            {
+                                drillType = "gas_leak";
+                                duration = ARGasLeakManager.Instance.CompletionDuration;
+                                score = ARGasLeakManager.Instance.FinalScore;
+                            }
+                            else if (fireCompleted)
+                            {
+                                drillType = "fire_safety";
+                                duration = PlayerPrefs.GetFloat($"Drill_FireSafety_Time_{currentWorkerId}", 8.5f);
+                                score = PlayerPrefs.GetInt($"Drill_FireSafety_Score_{currentWorkerId}", 100);
+                            }
 
                             using (AndroidJavaObject resultIntent = new AndroidJavaObject("android.content.Intent"))
                             {
                                 resultIntent.Call<AndroidJavaObject>("putExtra", "duration", duration);
                                 resultIntent.Call<AndroidJavaObject>("putExtra", "score", score);
                                 resultIntent.Call<AndroidJavaObject>("putExtra", "worker_id", currentWorkerId);
+                                resultIntent.Call<AndroidJavaObject>("putExtra", "drill_type", drillType);
                                 currentActivity.Call("setResult", -1 /* Activity.RESULT_OK */, resultIntent);
                             }
 
-                            Debug.Log($"[ReturnToReactBridge] Drill COMPLETED! Calling Android activity.finish() with RESULT_OK (time={duration:F1}s, score={score})...");
+                            Debug.Log($"[ReturnToReactBridge] Drill {drillType} COMPLETED! Calling Android activity.finish() with RESULT_OK (time={duration:F1}s, score={score})...");
                         }
                         else
                         {
-                            Debug.Log("[ReturnToReactBridge] Drill NOT completed / dismissed without extinguishing. Calling Android activity.finish() with RESULT_CANCELED...");
+                            Debug.Log("[ReturnToReactBridge] Drill NOT completed / dismissed without completion. Calling Android activity.finish() with RESULT_CANCELED...");
                             currentActivity.Call("setResult", 0 /* Activity.RESULT_CANCELED */);
                         }
 

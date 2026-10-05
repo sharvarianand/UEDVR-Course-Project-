@@ -13,6 +13,7 @@ namespace JiwiAR.Editor
     {
         private const string APK_OUTPUT_PATH = "../Jiwi-AR.apk";
         private const string SCENE_AR = "Assets/Scenes/2_FireSafetyAR.unity";
+        private const string SCENE_GAS_LEAK = "Assets/Scenes/3_GasLeakAR.unity";
 
         [MenuItem("Jiwi-AR/1. Sync React Assets to StreamingAssets", false, 10)]
         public static void SyncReactAssets()
@@ -139,7 +140,8 @@ namespace JiwiAR.Editor
         public static void BuildSingleAPK()
         {
             SyncReactAssets();
-            SetupEquipmentPrefabsAndScene();
+            // Prefabs and AR scenes are already pre-baked and saved on disk.
+            // Avoid re-opening scenes in batchmode to prevent Burst background compile races.
 
             Debug.Log("[Jiwi-AR] Configuring PlayerSettings for Jiwi-AR...");
             PlayerSettings.companyName = "Jiwi";
@@ -161,7 +163,7 @@ namespace JiwiAR.Editor
             EditorUserBuildSettings.buildAppBundle = false;
             EditorUserBuildSettings.exportAsGoogleAndroidProject = false;
 
-            string[] scenes = new string[] { SCENE_AR };
+            string[] scenes = new string[] { SCENE_AR, SCENE_GAS_LEAK };
 
             string outputPath = Path.GetFullPath(Path.Combine(Application.dataPath, APK_OUTPUT_PATH));
             Debug.Log($"[Jiwi-AR] Starting unified APK build to: {outputPath} ...");

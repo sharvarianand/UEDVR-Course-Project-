@@ -8,6 +8,7 @@ import AdminDashboardModal from './components/AdminDashboardModal';
 import DrillCompletionModal from './components/DrillCompletionModal';
 import PPECourseModal from './components/PPECourseModal';
 import FireExtinguisherGuideModal from './components/FireExtinguisherGuideModal';
+import GasLeakModuleModal from './components/GasLeakModuleModal';
 import { offlineSync } from './services/offlineSync';
 
 export default function App() {
@@ -27,6 +28,7 @@ export default function App() {
   // Modals
   const [showPPECourse, setShowPPECourse] = useState(false);
   const [showFireGuide, setShowFireGuide] = useState(false);
+  const [showGasLeakModule, setShowGasLeakModule] = useState(false);
   const [showInteractiveDrill, setShowInteractiveDrill] = useState(false);
   const [activeDrillModuleId, setActiveDrillModuleId] = useState('ppe_hazard');
   const [showARModal, setShowARModal] = useState(false);
@@ -234,6 +236,12 @@ export default function App() {
       return;
     }
 
+    // If Gas Leak, launch full interactive course, 5-question scenario quiz, and 3D AR simulation!
+    if (targetModuleId === 'gas_leak') {
+      setShowGasLeakModule(true);
+      return;
+    }
+
     // Launch multi-module interactive drill modal for other modules
     setShowInteractiveDrill(true);
   };
@@ -337,7 +345,7 @@ export default function App() {
       {/* 2. Admin Operations Command Center (when authenticated as Admin) */}
       {worker && userRole === 'admin' && (
         <AdminDashboardModal
-          onClose={handleLogout}
+          onClose={() => setUserRole('worker')}
         />
       )}
 
@@ -352,6 +360,7 @@ export default function App() {
           }}
           onLaunchAR={() => handleStartSimulation('fire_safety')}
           onLogout={handleLogout}
+          onOpenAdmin={() => setUserRole('admin')}
           trainings={workerTrainings}
           drillStats={drillStats}
         />
@@ -388,6 +397,19 @@ export default function App() {
           language={language}
           onClose={() => setShowFireGuide(false)}
           onStartAR={handleLaunchFireAR}
+        />
+      )}
+
+      {/* Comprehensive Gas Leak & Confined Space AR Training Module */}
+      {showGasLeakModule && worker && userRole === 'worker' && (
+        <GasLeakModuleModal
+          worker={worker}
+          language={language}
+          onClose={() => setShowGasLeakModule(false)}
+          onCompleteCourse={async (result) => {
+            setShowGasLeakModule(false);
+            await handleDrillFinished(result);
+          }}
         />
       )}
 

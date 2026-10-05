@@ -29,21 +29,21 @@ const MODULE_DATA = {
     level: 'HAZARDOUS ATMOSPHERE',
     levelColor: 'text-sky-400 bg-sky-500/10 border-sky-500/25',
     heroImage: './module_images/module_gas_leak_hero.jpg',
-    description: 'Detect toxic and explosive atmospheric gases (CH4, CO, H2S) in confined mine shafts with multi-gas detector calibration.',
+    description: 'Master gas leak recognition, emergency response sequence, and live AR detection simulation using authentic 3D industrial equipment.',
     objectives: [
-      'Calibrate 4-gas optical sensor detector',
-      'Identify Lower Explosive Limit (LEL) for Methane (CH4)',
-      'Don positive-pressure self-contained breathing apparatus',
-      'Establish forced atmospheric ventilation ducting',
-      'Execute emergency underground evacuation horn protocol'
+      'Recognize danger: hissing sounds, odor & multi-gas detector alarms',
+      'Execute DGMS response sequence: Detect ➔ Warn ➔ Isolate ➔ Evacuate ➔ Report',
+      'Master life-saving PPE (IS 2925, SCBA, ESD footwear & gloves)',
+      'Pinpoint leak source in 3D AR with real-time proximity gas detector',
+      'Follow tactical crosswind evacuation and AI analytics debrief'
     ],
     duration: '7-10 minutes',
-    difficulty: 'Advanced',
+    difficulty: 'Advanced DGMS',
     difficultyBars: [true, true, true],
-    mode: 'AR Procedure',
+    mode: 'Interactive Course & AR Simulation',
     offline: true,
     ctaText: 'START TRAINING',
-    isAR: false
+    isAR: true
   },
   ppe_hazard: {
     title: 'PPE & Hazard Inspection',

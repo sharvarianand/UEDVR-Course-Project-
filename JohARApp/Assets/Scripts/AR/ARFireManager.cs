@@ -114,9 +114,12 @@ public class ARFireManager : MonoBehaviour
         if (extinguisherPrefab == null) extinguisherPrefab = Resources.Load<GameObject>("Prefabs/AR/ExtinguisherPrefab");
     }
 
+    private bool isRedirecting = false;
+
     void OnDestroy()
     {
         if (Instance == this) Instance = null;
+        if (isRedirecting) return;
         Screen.autorotateToPortrait = true;
         Screen.autorotateToPortraitUpsideDown = false;
         Screen.autorotateToLandscapeLeft = false;
@@ -153,14 +156,14 @@ public class ARFireManager : MonoBehaviour
 #endif
         }
 
-        ReadAndroidIntentExtras();
+        if (ReadAndroidIntentExtras()) return;
         FindOrCreateUIElements();
 
         // Start Phase 1: Environment Scanning
         EnterPhase(DrillPhase.ScanningEnvironment);
     }
 
-    private void ReadAndroidIntentExtras()
+    private bool ReadAndroidIntentExtras()
     {
 #if UNITY_ANDROID && !UNITY_EDITOR
         try
@@ -173,6 +176,15 @@ public class ARFireManager : MonoBehaviour
                     AndroidJavaObject intent = currentActivity.Call<AndroidJavaObject>("getIntent");
                     if (intent != null)
                     {
+                        string drillType = intent.Call<string>("getStringExtra", "drill_type");
+                        if (!string.IsNullOrEmpty(drillType) && drillType.Equals("gas_leak", StringComparison.OrdinalIgnoreCase))
+                        {
+                            Debug.Log("[ARFireManager] Intent requested drill_type=gas_leak. Redirecting to 3_GasLeakAR...");
+                            isRedirecting = true;
+                            SceneManager.LoadScene("3_GasLeakAR");
+                            return true;
+                        }
+
                         string incomingWorker = intent.Call<string>("getStringExtra", "worker_id");
                         if (!string.IsNullOrEmpty(incomingWorker))
                         {
@@ -199,6 +211,7 @@ public class ARFireManager : MonoBehaviour
             Debug.LogWarning("[ARFireManager] Intent read warning: " + ex.Message);
         }
 #endif
+        return false;
     }
 
     private void FindOrCreateUIElements()

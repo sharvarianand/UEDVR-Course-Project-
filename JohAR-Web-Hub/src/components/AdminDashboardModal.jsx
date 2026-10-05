@@ -12,6 +12,7 @@ import {
 import { supabase } from '../services/supabase';
 import { offlineSync } from '../services/offlineSync';
 import jiwiLogo from '../assets/jiwiAR_logo.png';
+import CertificateModal from './CertificateModal';
 
 export default function AdminDashboardModal({ onClose }) {
   const [activeTab, setActiveTab] = useState('overview');
@@ -21,6 +22,7 @@ export default function AdminDashboardModal({ onClose }) {
   const [realtimeStatus, setRealtimeStatus] = useState('CONNECTED');
   const [isSyncing, setIsSyncing] = useState(false);
   const [lastSyncTime, setLastSyncTime] = useState(new Date());
+  const [selectedWorkerForCert, setSelectedWorkerForCert] = useState(null);
 
   useEffect(() => {
     fetchInitialData();
@@ -277,12 +279,13 @@ export default function AdminDashboardModal({ onClose }) {
 
       </div>
 
-      {/* Navigation Tabs (Overview, AR Drills, Workers) */}
+      {/* Navigation Tabs (Overview, AR Drills, Workers, Certificates) */}
       <nav className="flex px-4 border-b border-white/[0.06] bg-[#090A0F] gap-1 overflow-x-auto no-scrollbar shrink-0">
         {[
           { id: 'overview', label: 'Overview', icon: Activity },
           { id: 'trainings', label: `AR Drills (${trainings.length})`, icon: Flame },
-          { id: 'workers', label: `Workers (${workers.length})`, icon: Users }
+          { id: 'workers', label: `Workers (${workers.length})`, icon: Users },
+          { id: 'certificates', label: `Certificates (${workers.length})`, icon: Award }
         ].map((tab) => {
           const TabIcon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -377,13 +380,24 @@ export default function AdminDashboardModal({ onClose }) {
                       <div className="flex items-center gap-2 shrink-0">
                         <span className="text-[10px] font-mono text-zinc-400">{drillCount} drill{drillCount !== 1 ? 's' : ''}</span>
                         {isCertified ? (
-                          <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                            ✓ Certified
-                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setSelectedWorkerForCert(w)}
+                            className="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 flex items-center gap-1 transition cursor-pointer"
+                            title="View and Download DGMS Certificate"
+                          >
+                            <Award className="w-3 h-3 text-amber-400" />
+                            <span>✓ View Cert</span>
+                          </button>
                         ) : (
-                          <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-white/[0.05] text-zinc-400 border border-white/[0.06]">
-                            Pending
-                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setSelectedWorkerForCert(w)}
+                            className="px-2 py-0.5 rounded text-[10px] font-medium bg-white/[0.05] hover:bg-white/[0.1] text-zinc-400 border border-white/[0.06] transition cursor-pointer"
+                            title="Preview Certificate"
+                          >
+                            Preview
+                          </button>
                         )}
                       </div>
                     </div>
@@ -393,6 +407,7 @@ export default function AdminDashboardModal({ onClose }) {
             </div>
 
           </div>
+
         )}
 
         {/* 2. AR DRILLS TAB */}
@@ -476,6 +491,7 @@ export default function AdminDashboardModal({ onClose }) {
                   <th className="py-2.5 px-3">Safety Score</th>
                   <th className="py-2.5 px-3">Certification</th>
                   <th className="py-2.5 px-3">Last Active</th>
+                  <th className="py-2.5 px-3 text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/[0.04]">
@@ -504,6 +520,17 @@ export default function AdminDashboardModal({ onClose }) {
                       <td className="py-2.5 px-3 text-zinc-500 font-mono text-[11px]">
                         {w.last_active_at ? new Date(w.last_active_at).toLocaleString() : ''}
                       </td>
+                      <td className="py-2.5 px-3 text-right">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedWorkerForCert(w)}
+                          className="px-2.5 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 text-amber-300 text-[11px] font-medium inline-flex items-center gap-1.5 transition active:scale-95 cursor-pointer"
+                          title="View & Download Certificate"
+                        >
+                          <Award className="w-3.5 h-3.5 text-amber-400" />
+                          <span>View Cert</span>
+                        </button>
+                      </td>
                     </tr>
                   );
                 })}
@@ -512,7 +539,148 @@ export default function AdminDashboardModal({ onClose }) {
           </div>
         )}
 
+        {/* 4. CERTIFICATES REGISTRY TAB */}
+        {activeTab === 'certificates' && (
+          <div className="space-y-4">
+            {/* Regulatory Ledger Header */}
+            <div className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-6 h-6 rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center justify-center">
+                    <Award className="w-3.5 h-3.5" />
+                  </div>
+                  <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+                    DGMS Mine Safety Credential Registry
+                  </h3>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    {certifiedWorkersCount} OF {totalWorkers} CERTIFIED
+                  </span>
+                </div>
+                <p className="text-[11px] text-zinc-400">
+                  Official DGMS &amp; Coal India accredited personnel safety certificates. Click any record to inspect, print, or download high-resolution certificates.
+                </p>
+              </div>
+            </div>
+
+            {/* Certificates Mobile Cards View (Mobile Friendly) */}
+            <div className="block md:hidden space-y-3">
+              {workers.map((w) => {
+                const certId = `DGMS-JH-2026-${(w.worker_id || '7042').replace(/[^a-zA-Z0-9]/g, '')}-SEC9`;
+                const wScore = calculateWorkerSafetyScore(w);
+                return (
+                  <div
+                    key={w.worker_id}
+                    onClick={() => setSelectedWorkerForCert(w)}
+                    className="p-3.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08] transition active:scale-[0.99] cursor-pointer space-y-3"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <span className="font-mono text-[10px] text-amber-400 font-semibold tracking-wide block">
+                          {certId}
+                        </span>
+                        <h4 className="text-sm font-bold text-white mt-0.5">{w.name}</h4>
+                        <p className="text-[11px] text-zinc-400">
+                          {w.worker_id} • {w.role} • {w.sector}
+                        </p>
+                      </div>
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">
+                        <Check className="w-3 h-3 stroke-[2]" /> Active Pass
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-2 border-t border-white/[0.06]">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-mono font-bold text-emerald-400">{wScore}%</span>
+                        <span className="text-[10px] text-zinc-400">Class-A DGMS Clearance</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedWorkerForCert(w);
+                        }}
+                        className="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 text-xs font-semibold inline-flex items-center gap-1.5 transition active:scale-95 cursor-pointer shadow-sm"
+                      >
+                        <Award className="w-3.5 h-3.5" />
+                        <span>View &amp; Download</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Certificates Table (Desktop / Tablet View) */}
+            <div className="hidden md:block bg-white/[0.02] border border-white/[0.06] rounded-xl p-4 overflow-x-auto">
+              <table className="w-full text-left text-xs text-zinc-300 min-w-[650px]">
+                <thead className="border-b border-white/[0.06] text-zinc-400 uppercase text-[10px]">
+                  <tr>
+                    <th className="py-2.5 px-3">Certificate ID</th>
+                    <th className="py-2.5 px-3">Worker Details</th>
+                    <th className="py-2.5 px-3">Sector</th>
+                    <th className="py-2.5 px-3">Clearance Rating</th>
+                    <th className="py-2.5 px-3">Status</th>
+                    <th className="py-2.5 px-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/[0.04]">
+                  {workers.map((w) => {
+                    const certId = `DGMS-JH-2026-${(w.worker_id || '7042').replace(/[^a-zA-Z0-9]/g, '')}-SEC9`;
+                    const wScore = calculateWorkerSafetyScore(w);
+                    return (
+                      <tr
+                        key={w.worker_id}
+                        onClick={() => setSelectedWorkerForCert(w)}
+                        className="hover:bg-white/[0.04] transition cursor-pointer"
+                      >
+                        <td className="py-2.5 px-3 font-mono text-[11px] text-amber-400 font-medium">{certId}</td>
+                        <td className="py-2.5 px-3">
+                          <span className="font-semibold text-white block">{w.name}</span>
+                          <span className="text-[10px] text-zinc-400 font-mono">{w.worker_id} • {w.role}</span>
+                        </td>
+                        <td className="py-2.5 px-3 text-zinc-300">{w.sector}</td>
+                        <td className="py-2.5 px-3 font-mono">
+                          <span className="text-emerald-400 font-bold">{wScore}%</span>
+                          <span className="text-[10px] text-zinc-500 block">Class-A Clearance</span>
+                        </td>
+                        <td className="py-2.5 px-3">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                            <Check className="w-3 h-3 stroke-[2]" /> Active Pass
+                          </span>
+                        </td>
+                        <td className="py-2.5 px-3 text-right">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedWorkerForCert(w);
+                            }}
+                            className="px-2.5 py-1.5 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 text-[11px] font-medium inline-flex items-center gap-1 transition active:scale-95 cursor-pointer"
+                          >
+                            <Award className="w-3.5 h-3.5" />
+                            <span>View &amp; Download</span>
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
       </div>
+
+      {/* Certificate Inspection & Download Modal */}
+      {selectedWorkerForCert && (
+        <CertificateModal
+          worker={selectedWorkerForCert}
+          trainings={trainings.filter(t => t.worker_id === selectedWorkerForCert.worker_id)}
+          onClose={() => setSelectedWorkerForCert(null)}
+        />
+      )}
     </div>
   );
 }
+

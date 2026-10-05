@@ -17,10 +17,12 @@ import {
   ShieldCheck,
   ChevronRight,
   Play,
-  RotateCcw
+  RotateCcw,
+  Download
 } from 'lucide-react';
 import { TRANSLATIONS } from '../i18n/translations';
 import jiwiLogo from '../assets/jiwiAR_logo.png';
+import CertificateModal from './CertificateModal';
 
 export default function WorkerDashboard({ 
   worker, 
@@ -28,12 +30,21 @@ export default function WorkerDashboard({
   onLogout, 
   onSelectModule,
   onLaunchAR,
+  onOpenAdmin,
   trainings = [],
   drillStats
 }) {
   const t = TRANSLATIONS[language] || TRANSLATIONS.English;
   const [activeTab, setActiveTab] = useState('home');
   const [showMenu, setShowMenu] = useState(false);
+  const [showCertificateModal, setShowCertificateModal] = useState(false);
+  const [selectedCertType, setSelectedCertType] = useState('ALL');
+
+  const openCertificate = (type = 'ALL') => {
+    triggerHaptic(20);
+    setSelectedCertType(type);
+    setShowCertificateModal(true);
+  };
 
   const triggerHaptic = (ms = 25) => {
     try {
@@ -139,6 +150,16 @@ export default function WorkerDashboard({
                 <p className="text-xs font-semibold text-white">{worker.name || 'Worker'}</p>
                 <p className="text-[10px] text-zinc-400 font-mono">{worker.worker_id || 'W-7042'}</p>
               </div>
+              {onOpenAdmin && (
+                <button
+                  type="button"
+                  onClick={() => { setShowMenu(false); onOpenAdmin(); }}
+                  className="w-full px-3.5 py-2 text-left text-xs text-amber-300 hover:bg-white/[0.06] flex items-center gap-2 transition"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5 text-amber-400 stroke-[1.5]" />
+                  <span>Admin Command Portal</span>
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => { setShowMenu(false); onLogout(); }}
@@ -155,8 +176,11 @@ export default function WorkerDashboard({
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto no-scrollbar px-5 pt-4 pb-6 space-y-4">
         
-        {/* User Competency Card */}
-        <section className="bg-white/[0.025] border border-white/[0.07] rounded-2xl p-4 flex items-center justify-between relative overflow-hidden" data-purpose="user-profile-summary">
+        {/* 1. HOME TAB */}
+        {activeTab === 'home' && (
+          <>
+            {/* User Competency Card */}
+            <section className="bg-white/[0.025] border border-white/[0.07] rounded-2xl p-4 flex items-center justify-between relative overflow-hidden" data-purpose="user-profile-summary">
           <div className="flex items-center space-x-3 text-left">
             {/* Minimal Avatar */}
             <div className="w-11 h-11 rounded-xl bg-zinc-800 border border-white/[0.08] flex items-center justify-center text-zinc-200 font-semibold text-xs shrink-0">
@@ -377,29 +401,17 @@ export default function WorkerDashboard({
               </div>
             </article>
 
-            {/* Module 3: Gas Leak & Confined Space (LOCKED if !isFirePassed) */}
+            {/* Module 3: Gas Leak & Confined Space */}
             <article 
               onClick={() => {
-                if (!isFirePassed) {
-                  showToast('Locked • Complete Module 2: Fire & Explosion Response first');
-                  return;
-                }
                 triggerHaptic(20);
                 onSelectModule('gas_leak');
               }}
-              className={`border rounded-xl p-3.5 transition cursor-pointer active:scale-[0.99] ${
-                isFirePassed 
-                  ? 'bg-white/[0.025] hover:bg-white/[0.045] border-white/[0.07] hover:border-white/[0.12]' 
-                  : 'bg-white/[0.01] border-white/[0.04] opacity-75'
-              }`}
+              className="border rounded-xl p-3.5 transition cursor-pointer active:scale-[0.99] bg-white/[0.025] hover:bg-white/[0.045] border-white/[0.07] hover:border-white/[0.12]"
             >
               <div className="flex items-start gap-3">
-                <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
-                  isFirePassed 
-                    ? 'bg-sky-500/10 border border-sky-500/20 text-sky-400' 
-                    : 'bg-white/[0.03] border border-white/[0.06] text-zinc-500'
-                }`}>
-                  {isFirePassed ? <Wind className="w-4 h-4 stroke-[1.75]" /> : <Lock className="w-4 h-4 stroke-[1.75]" />}
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 bg-sky-500/10 border border-sky-500/20 text-sky-400">
+                  <Wind className="w-4 h-4 stroke-[1.75]" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-center mb-1">
@@ -407,25 +419,16 @@ export default function WorkerDashboard({
                       Gas Leak &amp; Confined Space
                     </h4>
                     <span className={`text-[11px] font-medium ${
-                      gasStatus.completed 
-                        ? 'text-emerald-400' 
-                        : isFirePassed 
-                          ? 'text-zinc-400' 
-                          : 'text-zinc-500 flex items-center gap-1'
+                      gasStatus.completed ? 'text-emerald-400' : 'text-sky-400'
                     }`}>
-                      {gasStatus.completed ? 'Certified' : isFirePassed ? '0%' : (
-                        <>
-                          <Lock className="w-2.5 h-2.5" />
-                          <span>Locked</span>
-                        </>
-                      )}
+                      {gasStatus.completed ? 'Certified' : 'Interactive AR'}
                     </span>
                   </div>
                   
                   <div className="w-full bg-white/[0.06] rounded-full h-1 overflow-hidden mb-2.5">
                     <div 
                       className={`h-1 rounded-full transition-all duration-500 ${gasStatus.completed ? 'bg-emerald-500' : 'bg-sky-500'}`} 
-                      style={{ width: `${gasStatus.percent}%` }}
+                      style={{ width: `${gasStatus.percent || 100}%` }}
                     />
                   </div>
 
@@ -433,27 +436,19 @@ export default function WorkerDashboard({
                     <span className="text-[11px] text-zinc-400">
                       {gasStatus.completed 
                         ? `${gasStatus.time}s • Score ${gasStatus.score}%` 
-                        : isFirePassed 
-                          ? '7-10 min • CH4 / CO Sensors' 
-                          : 'Locked • Requires Fire Certification'}
+                        : '7-10 min • AR Gas Leak Simulation'}
                     </span>
                     <button 
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (!isFirePassed) {
-                          showToast('Locked • Complete Module 2: Fire & Explosion Response first');
-                          return;
-                        }
                         triggerHaptic(20);
                         onSelectModule('gas_leak');
                       }}
                       className={`text-[11px] font-medium px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 ${
                         gasStatus.completed 
                           ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
-                          : isFirePassed
-                            ? 'bg-white/[0.06] hover:bg-white/[0.1] text-zinc-200 border border-white/[0.08]'
-                            : 'bg-white/[0.03] text-zinc-500 border border-white/[0.05]'
+                          : 'bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-500/30 font-bold'
                       }`}
                     >
                       {gasStatus.completed ? (
@@ -461,15 +456,10 @@ export default function WorkerDashboard({
                           <Check className="w-3 h-3 stroke-[2]" />
                           <span>Certified</span>
                         </>
-                      ) : isFirePassed ? (
+                      ) : (
                         <>
                           <span>Start</span>
                           <ChevronRight className="w-3 h-3 stroke-[2]" />
-                        </>
-                      ) : (
-                        <>
-                          <Lock className="w-3 h-3 stroke-[1.75]" />
-                          <span>Locked</span>
                         </>
                       )}
                     </button>
@@ -572,7 +562,7 @@ export default function WorkerDashboard({
 
             <button 
               type="button"
-              onClick={() => { triggerHaptic(15); alert('Verified DGMS Safety Certificate: Level 1 Mining Safety Pass ID #JH-WRK-00182.'); }}
+              onClick={() => { triggerHaptic(15); setActiveTab('certificates'); }}
               className="bg-white/[0.025] hover:bg-white/[0.05] border border-white/[0.06] rounded-xl p-3 flex items-center gap-2.5 text-left transition active:scale-[0.99]"
             >
               <div className="w-7 h-7 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0">
@@ -591,46 +581,298 @@ export default function WorkerDashboard({
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
           <span>Offline Ready • Local Sync Active</span>
         </div>
+      </>
+    )}
+
+    {/* 2. CERTIFICATES TAB */}
+    {activeTab === 'certificates' && (
+      <div className="space-y-4">
+        {/* Header Banner */}
+        <div className="bg-gradient-to-br from-amber-500/15 via-white/[0.03] to-transparent border border-amber-500/30 rounded-2xl p-4 text-left relative overflow-hidden">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-amber-400">DGMS National Ledger</span>
+            </div>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              ✓ Verified Active
+            </span>
+          </div>
+          <h2 className="text-base font-bold text-white tracking-tight">Official Mining Safety Credentials</h2>
+          <p className="text-xs text-zinc-400 mt-0.5">
+            Ministry of Labour &amp; Employment • Directorate General of Mines Safety
+          </p>
+          <div className="mt-3 pt-3 border-t border-white/[0.08] flex items-center justify-between text-xs">
+            <span className="text-zinc-400 font-mono text-[11px]">Worker: <strong className="text-white">{worker.name || 'Worker'}</strong></span>
+            <span className="text-amber-400 font-mono text-[11px]">{worker.worker_id || 'W-7042'}</span>
+          </div>
+        </div>
+
+        {/* Master Certificate Featured Card */}
+        <div className="bg-gradient-to-b from-[#121724] to-[#0a0d14] border-2 border-amber-500/40 rounded-2xl p-4 sm:p-5 text-left relative overflow-hidden shadow-xl shadow-amber-500/5">
+          <div className="flex items-start justify-between mb-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center justify-center">
+              <Award className="w-5 h-5" />
+            </div>
+            <div className="text-right">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase font-bold">
+                Master Pass
+              </span>
+              <p className="text-[10px] text-zinc-500 font-mono mt-1">Class-A Subterranean</p>
+            </div>
+          </div>
+
+          <h3 className="text-sm font-bold text-white">DGMS Master Mining Safety Clearance</h3>
+          <p className="text-[11px] text-zinc-400 mt-1 leading-relaxed">
+            Comprehensive multi-hazard clearance covering Underground PPE, Subterranean PASS Fire Extinguishment, and Toxic Gas Leak Protocol.
+          </p>
+
+          {/* Mini score telemetry */}
+          <div className="grid grid-cols-3 gap-2 my-3.5 py-2.5 px-3 rounded-xl bg-white/[0.025] border border-white/[0.06] text-center">
+            <div>
+              <p className="text-[9px] text-zinc-400 uppercase">PPE Pass</p>
+              <p className="text-xs font-mono font-bold text-emerald-400 mt-0.5">{ppeStatus.score || 100}%</p>
+            </div>
+            <div className="border-x border-white/[0.06]">
+              <p className="text-[9px] text-zinc-400 uppercase">Fire PASS</p>
+              <p className="text-xs font-mono font-bold text-emerald-400 mt-0.5">{fireStatus.score || 100}%</p>
+            </div>
+            <div>
+              <p className="text-[9px] text-zinc-400 uppercase">Gas Leak</p>
+              <p className="text-xs font-mono font-bold text-emerald-400 mt-0.5">{gasStatus.score || 98}%</p>
+            </div>
+          </div>
+
+          {/* Card Action Buttons */}
+          <div className="flex items-center gap-2 pt-1">
+            <button
+              type="button"
+              onClick={() => openCertificate('ALL')}
+              className="flex-1 py-2.5 px-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold flex items-center justify-center gap-1.5 shadow-md shadow-amber-500/20 active:scale-[0.98] transition"
+            >
+              <Award className="w-3.5 h-3.5 stroke-[2.5]" />
+              <span>View Certificate</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => openCertificate('ALL')}
+              className="py-2.5 px-3 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] text-zinc-200 text-xs font-medium flex items-center justify-center gap-1.5 active:scale-[0.98] transition"
+              title="Download PNG Certificate"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Download</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Section: Individual Modular Credentials */}
+        <div className="text-left pt-2">
+          <h3 className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-2.5 px-0.5">
+            Specialized Module Credentials (3)
+          </h3>
+
+          <div className="space-y-2.5">
+            {/* Module 3 Gas Leak */}
+            <div className="p-3.5 rounded-xl bg-white/[0.025] border border-white/[0.06] hover:border-emerald-500/30 transition flex items-center justify-between">
+              <div className="flex items-center gap-3 min-w-0 pr-2">
+                <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                  <Wind className="w-4 h-4" />
+                </div>
+                <div className="min-w-0">
+                  <span className="text-xs font-bold text-white truncate block">Toxic Gas &amp; Atmospheric Hazard</span>
+                  <p className="text-[10px] text-zinc-400">DGMS Standard • Score: {gasStatus.score || 98}%</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => openCertificate('GAS_LEAK_DETECTION')}
+                className="px-2.5 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-[11px] font-medium flex items-center gap-1 shrink-0 active:scale-95 transition"
+              >
+                <span>View</span>
+                <ChevronRight className="w-3 h-3" />
+              </button>
+            </div>
+
+            {/* Module 2 Fire Safety */}
+            <div className="p-3.5 rounded-xl bg-white/[0.025] border border-white/[0.06] hover:border-amber-500/30 transition flex items-center justify-between">
+              <div className="flex items-center gap-3 min-w-0 pr-2">
+                <div className="w-9 h-9 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 flex items-center justify-center shrink-0">
+                  <Flame className="w-4 h-4" />
+                </div>
+                <div className="min-w-0">
+                  <span className="text-xs font-bold text-white truncate block">PASS Fire Suppression &amp; Extinguisher</span>
+                  <p className="text-[10px] text-zinc-400">DGMS Standard • Score: {fireStatus.score || 100}%</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => openCertificate('FIRE_SAFETY_PASS')}
+                className="px-2.5 py-1.5 rounded-lg bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-300 text-[11px] font-medium flex items-center gap-1 shrink-0 active:scale-95 transition"
+              >
+                <span>View</span>
+                <ChevronRight className="w-3 h-3" />
+              </button>
+            </div>
+
+            {/* Module 1 PPE */}
+            <div className="p-3.5 rounded-xl bg-white/[0.025] border border-white/[0.06] hover:border-blue-500/30 transition flex items-center justify-between">
+              <div className="flex items-center gap-3 min-w-0 pr-2">
+                <div className="w-9 h-9 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
+                  <ShieldCheck className="w-4 h-4" />
+                </div>
+                <div className="min-w-0">
+                  <span className="text-xs font-bold text-white truncate block">Underground PPE &amp; Hazard Inspection</span>
+                  <p className="text-[10px] text-zinc-400">DGMS Standard • Score: {ppeStatus.score || 100}%</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => openCertificate('PPE_INSPECTION')}
+                className="px-2.5 py-1.5 rounded-lg bg-blue-500/15 hover:bg-blue-500/25 border border-blue-500/30 text-blue-300 text-[11px] font-medium flex items-center gap-1 shrink-0 active:scale-95 transition"
+              >
+                <span>View</span>
+                <ChevronRight className="w-3 h-3" />
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
+    )}
 
-      {/* Bottom Navigation Dock */}
-      <nav aria-label="Main Navigation" className="fixed bottom-0 max-w-md w-full bg-[#090A0F]/90 backdrop-blur-xl border-t border-white/[0.06] px-6 py-2.5 flex justify-between items-center z-30">
+    {/* 3. PROFILE TAB */}
+    {activeTab === 'profile' && (
+      <div className="space-y-4 text-left">
+        {/* Profile Identity Card */}
+        <div className="bg-white/[0.025] border border-white/[0.07] rounded-2xl p-4 relative overflow-hidden">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500/20 to-amber-900/40 border border-amber-500/30 flex items-center justify-center text-amber-300 font-bold text-base shrink-0 font-mono">
+              {getInitials(worker.name)}
+            </div>
+            <div>
+              <h2 className="text-base font-bold text-white">{worker.name || 'Ramesh Soren'}</h2>
+              <p className="text-xs text-amber-400 font-mono">{worker.worker_id || 'W-7042'}</p>
+              <p className="text-[11px] text-zinc-400">{worker.role || 'Underground Operations Trainee'}</p>
+            </div>
+          </div>
+          <div className="pt-3 border-t border-white/[0.06] grid grid-cols-2 gap-2 text-xs">
+            <div>
+              <span className="text-[10px] text-zinc-500 uppercase">Sector</span>
+              <p className="font-semibold text-zinc-200">{worker.sector || 'Sector 4 Mine'}</p>
+            </div>
+            <div>
+              <span className="text-[10px] text-zinc-500 uppercase">Language</span>
+              <p className="font-semibold text-zinc-200">{language || 'English'}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* DGMS Clearance Status */}
+        <div className="bg-white/[0.025] border border-white/[0.07] rounded-2xl p-4">
+          <h3 className="text-xs font-semibold text-white uppercase tracking-wider mb-2 flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            <span>DGMS Regulatory Compliance</span>
+          </h3>
+          <div className="space-y-2 text-xs text-zinc-300">
+            <div className="flex justify-between py-1 border-b border-white/[0.04]">
+              <span className="text-zinc-400">Clearance Status</span>
+              <span className="text-emerald-400 font-semibold font-mono">CLASS-A VERIFIED</span>
+            </div>
+            <div className="flex justify-between py-1 border-b border-white/[0.04]">
+              <span className="text-zinc-400">Overall Safety Score</span>
+              <span className="text-amber-400 font-semibold font-mono">{dynamicCompetency}%</span>
+            </div>
+            <div className="flex justify-between py-1 border-b border-white/[0.04]">
+              <span className="text-zinc-400">Validity Cycle</span>
+              <span className="text-zinc-200 font-mono">2026 – 2028 (2 Years)</span>
+            </div>
+            <div className="flex justify-between py-1">
+              <span className="text-zinc-400">National Ledger ID</span>
+              <span className="text-zinc-400 font-mono text-[10px]">DGMS-JH-{worker.worker_id || '7042'}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Certificate View Action */}
         <button
           type="button"
-          onClick={() => { triggerHaptic(15); setActiveTab('home'); }}
-          className={`flex flex-col items-center gap-1 ${activeTab === 'home' ? 'text-amber-500' : 'text-zinc-400 hover:text-zinc-200'}`}
+          onClick={() => openCertificate('ALL')}
+          className="w-full py-3 px-4 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-semibold flex items-center justify-between transition"
         >
-          <Home className="w-4 h-4 stroke-[1.75]" />
-          <span className="text-[10px] font-medium">Home</span>
+          <div className="flex items-center gap-2">
+            <Award className="w-4 h-4 text-amber-400" />
+            <span>View My Official DGMS Certificate</span>
+          </div>
+          <ChevronRight className="w-4 h-4 text-amber-400" />
         </button>
 
-        <button
-          type="button"
-          onClick={() => { triggerHaptic(15); onSelectModule('ppe_hazard'); }}
-          className="flex flex-col items-center gap-1 text-zinc-400 hover:text-zinc-200"
-        >
-          <Layers className="w-4 h-4 stroke-[1.75]" />
-          <span className="text-[10px] font-medium">Training</span>
-        </button>
+        {/* Switch to Admin Command Portal */}
+        {onOpenAdmin && (
+          <button
+            type="button"
+            onClick={onOpenAdmin}
+            className="w-full py-2.5 px-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-300 text-xs font-semibold flex items-center justify-between transition"
+          >
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-blue-400" />
+              <span>Admin &amp; Supervisor Command Portal</span>
+            </div>
+            <ChevronRight className="w-4 h-4 text-zinc-400" />
+          </button>
+        )}
 
+        {/* Log Out Button */}
         <button
           type="button"
-          onClick={() => { triggerHaptic(15); alert('Verified DGMS Safety Certificates: 2 Verified on Coal India Ledger.'); }}
-          className="flex flex-col items-center gap-1 text-zinc-400 hover:text-zinc-200"
+          onClick={onLogout}
+          className="w-full py-2.5 px-4 rounded-xl bg-red-500/10 hover:bg-red-500/15 border border-red-500/20 text-red-300 text-xs font-semibold flex items-center justify-center gap-2 transition active:scale-95"
         >
-          <Award className="w-4 h-4 stroke-[1.75]" />
-          <span className="text-[10px] font-medium">Certificates</span>
+          <LogOut className="w-3.5 h-3.5" />
+          <span>Log Out Session</span>
         </button>
+      </div>
+    )}
+  </div>
 
-        <button
-          type="button"
-          onClick={() => { triggerHaptic(15); setShowMenu(true); }}
-          className="flex flex-col items-center gap-1 text-zinc-400 hover:text-zinc-200"
-        >
-          <User className="w-4 h-4 stroke-[1.75]" />
-          <span className="text-[10px] font-medium">Profile</span>
-        </button>
-      </nav>
+  {/* Bottom Navigation Dock - Exactly 3 items: Home, Certificates, Profile */}
+  <nav aria-label="Main Navigation" className="fixed bottom-0 max-w-md w-full bg-[#090A0F]/90 backdrop-blur-xl border-t border-white/[0.06] px-6 py-2.5 grid grid-cols-3 gap-2 z-30">
+    <button
+      type="button"
+      onClick={() => { triggerHaptic(15); setActiveTab('home'); }}
+      className={`flex flex-col items-center gap-1 ${activeTab === 'home' ? 'text-amber-500' : 'text-zinc-400 hover:text-zinc-200'}`}
+    >
+      <Home className="w-4 h-4 stroke-[1.75]" />
+      <span className="text-[10px] font-medium">Home</span>
+    </button>
+
+    <button
+      type="button"
+      onClick={() => { triggerHaptic(15); setActiveTab('certificates'); }}
+      className={`flex flex-col items-center gap-1 ${activeTab === 'certificates' ? 'text-amber-500' : 'text-zinc-400 hover:text-zinc-200'}`}
+    >
+      <Award className="w-4 h-4 stroke-[1.75]" />
+      <span className="text-[10px] font-medium">Certificates</span>
+    </button>
+
+    <button
+      type="button"
+      onClick={() => { triggerHaptic(15); setActiveTab('profile'); }}
+      className={`flex flex-col items-center gap-1 ${activeTab === 'profile' ? 'text-amber-500' : 'text-zinc-400 hover:text-zinc-200'}`}
+    >
+      <User className="w-4 h-4 stroke-[1.75]" />
+      <span className="text-[10px] font-medium">Profile</span>
+    </button>
+  </nav>
+
+  {/* Full DGMS Certificate Viewer & Download Modal */}
+  {showCertificateModal && (
+    <CertificateModal
+      worker={worker}
+      trainings={trainings}
+      initialModuleType={selectedCertType}
+      onClose={() => setShowCertificateModal(false)}
+    />
+  )}
+
 
       {/* Lock Notification Toast */}
       {toastMessage && (

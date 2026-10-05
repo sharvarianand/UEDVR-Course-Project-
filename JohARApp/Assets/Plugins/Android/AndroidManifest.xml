@@ -53,8 +53,9 @@
     <!-- Embedded Unity AR Activity (Internal to this exact same APK) -->
     <activity
         android:name="com.unity3d.player.UnityPlayerGameActivity"
+        android:process=":UnityAR"
         android:theme="@style/BaseUnityGameActivityTheme"
-        android:screenOrientation="portrait"
+        android:screenOrientation="sensorLandscape"
         android:launchMode="singleTask"
         android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize|smallestScreenSize|fontScale|layoutDirection|density"
         android:hardwareAccelerated="false"
