@@ -1,5 +1,7 @@
-# 🏆 Project JohAR — AR-Based Industrial Safety & Vocational Training Simulator
-> **Smart India Hackathon (SIH) 2026** | **Problem Statement ID:** 26041 | **Target:** Government of Jharkhand & Industrial Workforce
+# 🏆 UEDVR Course Project — Project JohAR
+> **AR-Based Industrial Safety & Vocational Training Simulator** | **Smart India Hackathon (SIH) 2026** | **Problem Statement ID:** 26041
+
+This repository contains the **UEDVR Course Project** developed by `sharvarianand`.
 
 ---
 
@@ -52,7 +54,7 @@ The platform addresses critical industrial safety challenges through interactive
 ## 📂 Repository Structure
 
 ```plaintext
-SIH2026/
+UEDVR-Course-Project-/
 ├── JohARApp/                              # Main Unity Project Directory
 │   ├── Assets/                            # Source Assets, Scripts, Scenes, VFX, Prefabs
 │   │   ├── Scenes/                        # 0_Login, 1_Home, 2_FireSafetyAR
@@ -85,11 +87,11 @@ SIH2026/
 ### 2. Opening the Project
 1. Clone the repository:
    ```bash
-   git clone https://github.com/HalfPlateSahil/SIH2026.git
-   cd SIH2026
+   git clone https://github.com/sharvarianand/UEDVR-Course-Project-.git
+   cd UEDVR-Course-Project-
    ```
 2. Open **Unity Hub** -> Click **Add** -> **Add project from disk**.
-3. Select the **`JohARApp`** folder (inside `SIH2026/`).
+3. Select the **`JohARApp`** folder (inside `UEDVR-Course-Project-/`).
 4. Select Unity Editor version `6000.5.10f1` and open.
 
 ### 3. Scene Order in Build Settings
@@ -126,6 +128,7 @@ Make sure scenes are added in the following order in `File > Build Profiles / Bu
 ---
 
 ## 👥 Team
-- **Team**: HalfPlateSahil & Team
+- **Project Owner**: [sharvarianand](https://github.com/sharvarianand)
+- **Team**: UEDVR Course Project Team
 - **Hackathon**: Smart India Hackathon 2026
-- **Repository**: [https://github.com/HalfPlateSahil/SIH2026](https://github.com/HalfPlateSahil/SIH2026)
+- **Repository**: [https://github.com/sharvarianand/UEDVR-Course-Project-](https://github.com/sharvarianand/UEDVR-Course-Project-)
